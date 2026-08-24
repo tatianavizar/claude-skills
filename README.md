@@ -54,4 +54,6 @@ cd <nom-de-la-skill>/.. && zip -r -X ../dist/<nom-de-la-skill>.skill <nom-de-la-
 
 ## Licence
 
-Propriétaire — Tatiana Villamizar Mojica. Publié à titre de référence ; le contenu décrit un process de recette interne.
+© Tatiana Villamizar Mojica — tous droits réservés. Voir [LICENSE](LICENSE).
+
+Ces skills sont une conception personnelle : le workflow, les règles de rédaction et les exemples sont de l'autrice. Repo public pour référence et portfolio, pas une cession de droits — pas de réutilisation ou de redistribution sans accord écrit.

@@ -1,7 +1,7 @@
 ---
 name: scenarios-test-fonctionnels
 description: Génère des scénarios de test fonctionnels end-to-end pour une feature, en croisant le code du repo GitHub de l'app (comportement réel) avec le brief fonctionnel et les tickets (comportement attendu). Utiliser dès qu'un CDP demande de "créer des scénarios de test", "scénarios de recette", "tester cette feature", "couvrir fonctionnellement", "vérifier les cas limites", "tableau de couverture" — mais aussi pour des formulations indirectes comme "qu'est-ce qu'on doit vérifier avant de livrer", "comment on valide que ça marche", "on est prêts pour la recette ?", même sans le mot "scénario". Déclencher aussi en anglais ("test scenarios", "QA plan", "acceptance testing", "how do we test this", "coverage table"), ou si la personne partage un lien de feature/brief/ticket en demandant comment le tester.
-license: Propriétaire — Tatiana Villamizar Mojica (Capsens). Usage interne.
+license: © Tatiana Villamizar Mojica. Tous droits réservés — conception et rédaction de l'autrice.
 allowed-tools: Read, Grep, Glob, Write, WebFetch, Bash(git log:*), Bash(git show:*), Bash(git diff:*), mcp__*, mcp__claude_ai_Slite__*, mcp__claude_ai_Trello__*, mcp__claude_ai_Linear__*, mcp__claude_ai_Sentry__*
 ---
 
