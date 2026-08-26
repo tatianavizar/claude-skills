@@ -12,9 +12,11 @@
 
 ## Données de test à préparer
 
-| Identifiant | Rôle / état | Détail |
-|---|---|---|
-| | | |
+Toutes les entités citées en pré-conditions figurent ici : rôles, mais aussi projets, enveloppes, réseaux, comptes externes. `Muté par` = le scénario unique qui modifie l'état de l'entité, ou `—` si l'entité est en lecture seule sur tout le fichier.
+
+| Identifiant | Rôle / état | Muté par | Détail |
+|---|---|---|---|
+| | | | |
 
 ## Scénarios
 
@@ -25,8 +27,8 @@
   1. {Action}
   2. {Action}
 - **Résultats attendus** :
-  1. {Résultat correspondant à l'étape 1}
-  2. {Résultat correspondant à l'étape 2}
+  1. {État observable après l'étape 1 — pas une reformulation de l'action}
+  2. {État observable après l'étape 2}
 
 ### Scénario 2 — {Titre} ({Critique | Majeure | Mineure})
 {même structure}

@@ -73,13 +73,18 @@ Règles (détail et pièges dans `references/regles-redaction.md`) :
 - **Pré-conditions explicites** : rôle et ses conditions précises, feature flags, état des données.
 - **Ordre = logique métier du parcours**, jamais la criticité.
 - **Criticité dans le titre** entre parenthèses : `Critique` / `Majeure` / `Mineure`.
-- **Étapes et résultats attendus en deux listes numérotées parallèles**.
+- **Étapes et résultats attendus en deux listes numérotées parallèles**, une entrée de résultat par étape — jamais de résultat groupé ("1–5. chaque URL renvoie 404").
+- **Un résultat attendu n'est jamais la reformulation de son étape** : il énonce un état observable après l'action, pas l'action elle-même.
 - **Mutualiser les parcours** : le moins de scénarios possible sans perdre de couverture.
-- **Scénario de régression** si la feature modifie un comportement existant ; sinon le dire explicitement.
+- **Scénario de régression** si la feature modifie un comportement existant, **ou** mention explicite d'absence — jamais les deux dans le même fichier.
 - **Scénario feature flag désactivé** si la feature est derrière un flag ; sinon le dire explicitement.
 - **Responsive mutualisé** dans les scénarios existants, jamais dans un scénario dédié.
 
-Couverture attendue : chemin nominal, cas limites (données vides/max, doublons, valeurs invalides, actions concurrentes, permissions insuffisantes), résilience (erreur réseau, timeout, quota, échec silencieux, erreurs de l'étape 4), responsive si la feature touche le FO (mobile + desktop minimum).
+Couverture attendue : chemin nominal, cas limites (données vides/max, doublons, valeurs invalides, actions concurrentes, permissions insuffisantes), résilience, responsive si la feature touche le FO (mobile + desktop minimum).
+
+Deux exigences non négociables, détaillées dans `references/regles-redaction.md` :
+- **Résilience** : au moins un scénario de défaillance infra/asynchrone (réseau, timeout, job de fond qui échoue, quota, échec silencieux) + un par erreur de l'étape 4. Traitement asynchrone dans la feature (job, webhook, temps réel, export) → le cas "le traitement échoue" est obligatoire. Non déclenchable en recette → point de vigilance, pas une omission.
+- **Permissions** : pour chaque action réservée à un rôle, vérifier l'absence du point d'entrée **et** le refus de la soumission par un rôle non autorisé.
 
 Volume indicatif pour calibrer : **6 à 12 scénarios** pour une feature de taille moyenne (un parcours, 2-3 rôles). Sortir de cette fourchette est légitime, mais au-delà de ~15 vérifier d'abord qu'il n'y a pas un découpage à mutualiser.
 
@@ -92,17 +97,26 @@ Hors scénarios formels : ce qui mérite un œil humain en recette mais n'est pa
 ### 10. Tableau de couverture final
 Une ligne par contrainte technique ou fonctionnelle relevée en étapes 2 à 4. **Seules les contraintes observables par un CDP** — observable = vérifiable via UI, API, panel admin ou monitoring, sans lire le code. Contrainte vérifiable uniquement dans le code : chercher à la rendre observable autrement (admin, logs, dashboard) et la reformuler en critère d'acceptation ; sinon, ne pas la mettre dans le tableau.
 
+**Traçabilité — règle dure.** Pour chaque ligne marquée ✓, relire le scénario cité et retrouver le **résultat attendu numéroté** qui assère littéralement la contrainte. Aucun résultat correspondant, ou résultat portant sur autre chose → **compléter le scénario**, ou passer la ligne en ✗ avec renvoi en point de vigilance. Jamais laisser le ✓.
+
+Une ligne ✓ assortie d'une réserve ("à vérifier", "non testé explicitement") **est un ✗**. Formes que prend le défaut : voir `references/regles-redaction.md`.
+
 ## Format de sortie
 
 Un fichier Markdown par feature : `scenarios-{slug-feature}.md`, structuré selon `assets/template-scenarios.md`.
 
 ## Checklist avant de livrer
 
-- [ ] **Reprendre les 11 règles de l'étape 7 une par une** et vérifier chaque scénario contre chacune — c'est la vérification principale, ne pas la survoler
-- [ ] Balayage transverse des fixtures : chaque entité mutée est absente de **tous** les autres scénarios, y compris non adjacents
-- [ ] Table "Données de test à préparer" complète et cohérente avec les pré-conditions déclarées
-- [ ] Couverture : nominal, cas limites, résilience — les trois présents
+- [ ] **Reprendre les règles de l'étape 7 une par une** et vérifier chaque scénario contre chacune — vérification principale, ne pas la survoler
+- [ ] **Traçabilité du tableau : pour chaque ligne ✓, retrouver le résultat attendu numéroté qui l'assère.** Aucun résultat correspondant → compléter le scénario ou passer la ligne en ✗. Toute ligne ✓ portant une réserve devient ✗
+- [ ] Chaque résultat attendu énonce un état observable, aucun ne reformule son étape
+- [ ] Aucun résultat groupé sur plusieurs étapes
+- [ ] Table "Données de test à préparer" : toutes les entités citées en pré-conditions y figurent (rôles, projets, enveloppes, réseaux), et la colonne **Muté par** est renseignée pour chacune
+- [ ] Balayage transverse des fixtures : chaque entité mutée est absente de **tous** les autres scénarios, y compris non adjacents. Une entité dont la colonne Muté par cite deux scénarios est un défaut, pas une optimisation
+- [ ] Couverture : nominal, cas limites, résilience — les trois présents, dont au moins un cas de défaillance asynchrone/infra si la feature en contient
+- [ ] Permissions : chaque action réservée à un rôle est testée en absence de point d'entrée **et** en refus d'écriture
+- [ ] Régression : soit un scénario, soit une mention d'absence — pas les deux
 - [ ] Mode indiqué (standard / dégradé), avec avertissement en tête si dégradé
 - [ ] Monitoring tracé explicitement, même si rien n'a été trouvé
 - [ ] Version du brief et ticket(s) référencés dans le contexte
-- [ ] Tableau de couverture : une ligne par contrainte des étapes 2 à 4, chacune vérifiable sans lire le code, chacune pointant vers un scénario ou justifiée en point de vigilance
+- [ ] Tableau de couverture : une ligne par contrainte des étapes 2 à 4, chacune vérifiable sans lire le code

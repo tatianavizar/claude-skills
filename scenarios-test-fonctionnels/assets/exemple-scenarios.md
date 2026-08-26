@@ -2,7 +2,9 @@
 
 Exemple complet de fichier généré par cette skill, à consulter en cas de doute sur la granularité attendue. Feature fictive mais réaliste : gestion multi-wallets sur une plateforme de financement participatif (BO admin + FO investisseur, PSP externe).
 
-Ce que l'exemple illustre : une fixture dédiée par entité mutée (aucun scénario ne dépend de l'état laissé par un autre), criticité dans les titres, listes parallèles étapes/résultats, ordre métier, mutualisation d'actions enchaînées par un même rôle (scénario 3 : paiement puis annulation), responsive intégré dans des scénarios existants, régression et feature flag traités.
+Ce que l'exemple illustre : une fixture dédiée par entité mutée avec la colonne `Muté par` renseignée (aucun scénario ne dépend de l'état laissé par un autre), criticité dans les titres, listes parallèles étapes/résultats où chaque résultat énonce un état observable et non l'action, ordre métier, mutualisation d'actions enchaînées par un même rôle (scénario 3 : paiement puis annulation), responsive intégré dans des scénarios existants, résilience infra (scénario 5 : timeout PSP), régression et feature flag traités.
+
+Vérifier surtout la **traçabilité du tableau de couverture** : chaque ligne ✓ renvoie à un scénario dont un résultat attendu numéroté assère littéralement la contrainte, et la seule contrainte non couverte est marquée ✗ avec renvoi en point de vigilance.
 
 ---
 
@@ -18,20 +20,22 @@ Ce que l'exemple illustre : une fixture dédiée par entité mutée (aucun scén
 
 ## Données de test à préparer
 
-| Identifiant | Rôle / état | Détail |
-|---|---|---|
-| `admin-recette` | Admin BO | droits complets — aucune mutation propre, réutilisable partout |
-| `porteur-sans-projet` | Porteur de projet | onboarding PSP complété, **aucun** projet publié — exclusif au scénario 1 |
-| `porteur-un-projet` | Porteur de projet | onboarding complété, **exactement un** projet publié, pas d'IBAN virtuel — exclusif au scénario 2 |
-| `porteur-iban` | Porteur de projet | IBAN virtuel **déjà généré** — lecture seule (scénario 2) |
-| `porteur-archive` | Porteur de projet | 1 projet publié destiné à l'archivage — exclusif au scénario 4 |
-| `porteur-timeout` | Porteur de projet | onboarding complété, projet prêt à publier — exclusif au scénario 5 |
-| `investisseur-nonaverti` | Investisseur FO | KYC validé, statut **non averti**, solde suffisant — exclusif au scénario 3 |
-| `investisseur-sansko` | Investisseur FO | KYC **non validé** — exclusif au scénario 5 |
-| `investisseur-averti` | Investisseur FO | KYC validé, statut **averti**, solde suffisant — exclusif au scénario 6 |
-| `projet-souscription-A` | Projet publié | collecte ouverte — cible du scénario 3 |
-| `projet-souscription-B` | Projet publié | collecte ouverte — cible du scénario 6 |
-| `projet-flag-off` | Projet publié + 1 souscription payée | cible du scénario 7 (lecture seule) |
+Toutes les entités citées en pré-conditions figurent ici : rôles, mais aussi projets, enveloppes, réseaux, comptes externes. `Muté par` = le scénario unique qui modifie l'état de l'entité, ou `—` si l'entité est en lecture seule sur tout le fichier.
+
+| Identifiant | Rôle / état | Muté par | Détail |
+|---|---|---|---|
+| `admin-recette` | Admin BO | — | droits complets, aucun état propre modifié par les scénarios |
+| `porteur-sans-projet` | Porteur de projet | sc1 | onboarding PSP complété, **aucun** projet publié ; gagne un projet en sc1 |
+| `porteur-un-projet` | Porteur de projet | sc2 | onboarding complété, **exactement un** projet publié, pas d'IBAN ; gagne un projet et un IBAN en sc2 |
+| `porteur-iban` | Porteur de projet | — | IBAN virtuel **déjà généré**, consulté en lecture seule en sc2 |
+| `porteur-archive` | Porteur de projet | sc4 | 1 projet publié ; le projet est archivé en sc4 (irréversible) |
+| `porteur-timeout` | Porteur de projet | sc5 | onboarding complété, projet prêt à publier ; publication en échec puis rattrapée en sc5 |
+| `investisseur-nonaverti` | Investisseur FO | sc3 | KYC validé, statut **non averti**, solde suffisant ; souscrit puis annule en sc3 |
+| `investisseur-sansko` | Investisseur FO | — | KYC **non validé** ; sa tentative de souscription en sc5 est refusée, aucun état créé |
+| `investisseur-averti` | Investisseur FO | sc6 | KYC validé, statut **averti**, solde suffisant ; souscrit en sc6 |
+| `projet-souscription-A` | Projet publié | sc3 | collecte ouverte ; reçoit la souscription de sc3 (la tentative refusée de sc5 ne le modifie pas) |
+| `projet-souscription-B` | Projet publié | sc6 | collecte ouverte ; reçoit la souscription de sc6 |
+| `projet-flag-off` | Projet publié + 1 souscription payée | — | consulté en lecture seule en sc7 |
 
 ## Scénarios
 
