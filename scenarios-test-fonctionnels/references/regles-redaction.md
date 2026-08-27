@@ -40,7 +40,17 @@ Donc : **un seul investisseur actif qui souscrit sur trois projets différents**
 - **Données de test inutilisées** : toute entité déclarée dans la table mais citée dans aucune pré-condition est à supprimer. Elles s'accumulent quand la rédaction évolue et gonflent le coût de prep pour rien.
 - **Données de test mono-scénario** : chaque entité dont la colonne `Muté par` ne cite qu'un scénario doit passer le test de la classification ci-dessus. Si la mutation n'est pas destructive, fusionner avec une donnée de test existante.
 - **Colonne `Muté par`** : un seul scénario, ou `—` si l'entité n'est jamais mutée de façon destructive. Deux scénarios destructifs dans la case = défaut.
-- **Colonne `Préparation`** : `existant en staging` / `BO` / `à créer avant chaque run`. Rend le coût visible avant de commencer, et distingue ce qui est réutilisable d'un run à l'autre.
+- **Colonne `Préparation`** — trois valeurs, toutes réalisables par le CDP lui-même :
+
+  | Valeur | Sens |
+  |---|---|
+  | `existant en staging` | à réutiliser tel quel, rien à faire |
+  | `à créer au BO` | créable une fois, réutilisable ensuite d'un run à l'autre |
+  | `à créer au BO à chaque run` | non réutilisable, à refaire avant chaque passage (adresse email vierge, compte à usage unique) |
+
+  Rend le coût de préparation visible avant de commencer. Ne jamais y écrire une instruction destinée à un développeur (script de seed, insertion en base, commande console) : ce n'est pas au CDP de l'exécuter, et la ligne serait ignorée.
+
+- **Un état non créable au BO bloque le scénario** — ne pas inventer une valeur de préparation pour le masquer. Trois issues, dans cet ordre : chercher un état voisin qui se prépare au BO et couvre la même contrainte ; sinon traiter la contrainte comme une contrainte non jouable (étape 11) et vérifier si un test automatisé la couvre ; sinon la signaler au CDP dans le message de remise, en nommant ce qu'il faut demander à l'équipe. Un scénario dont la donnée est impossible à préparer n'est pas un scénario, c'est une case qui restera vide.
 - **Entités non-rôles** : projets, enveloppes, réseaux, comptes externes cités en pré-conditions doivent figurer dans la table. Une pré-condition qui référence un identifiant absent est une donnée de test que personne ne préparera.
 
 ### Pièges

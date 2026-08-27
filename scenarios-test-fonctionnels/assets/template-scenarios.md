@@ -24,7 +24,7 @@
 *Noms lisibles ("Investisseur A", "Projet A"), pas d'identifiant technique. Toutes les entités citées en pré-conditions figurent ici : comptes, projets, enveloppes, réseaux. Réutiliser par défaut — une entrée dédiée uniquement si un scénario la mute de façon destructive.*
 
 - `Muté par` : le scénario unique qui modifie l'état de façon destructive, ou `—` (les mutations additives sont décrites dans le détail).
-- `Préparation` : `existant en staging` | `BO` | `à créer avant chaque run`.
+- `Préparation` : `existant en staging` | `à créer au BO` | `à créer au BO à chaque run` (non réutilisable). Toutes réalisables par le CDP — un état non créable au BO bloque le scénario et se signale, il ne se maquille pas en instruction de préparation.
 
 | Nom | Rôle / état | Muté par | Préparation | Détail |
 |---|---|---|---|---|

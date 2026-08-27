@@ -14,6 +14,7 @@ Les items sont classés par gravité : les trois premiers sont ceux qui produise
 ## Coût de préparation
 
 - [ ] Table "Données de test à préparer" : toutes les entités citées en pré-conditions y figurent (comptes, projets, enveloppes, réseaux), colonnes **Muté par** et **Préparation** renseignées
+- [ ] Chaque valeur de **Préparation** est réalisable par le CDP (`existant en staging`, `à créer au BO`, `à créer au BO à chaque run`) — aucune instruction destinée à un développeur, et tout état non créable au BO est signalé au CDP au lieu d'être masqué
 - [ ] Noms lisibles partout ("Investisseur A", "Projet A") — aucun identifiant technique en kebab-case entre accents graves, et aucun suffixe de lettre là où une seule entité du type existe
 - [ ] **Chasse aux données de test superflues** : pour chaque entrée mono-scénario, classer la mutation (nulle / additive / réversible / destructive). Seule une mutation destructive justifie une entrée dédiée — sinon fusionner. Supprimer toute entrée citée dans aucune pré-condition
 - [ ] Balayage transverse : chaque entité mutée de façon destructive est absente de **tous** les autres scénarios, y compris non adjacents

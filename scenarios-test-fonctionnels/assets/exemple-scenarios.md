@@ -31,18 +31,18 @@ Ce que l'exemple illustre :
 ## Données de test à préparer
 
 - `Muté par` : le scénario qui modifie l'état de façon **destructive**. `—` sinon ; les mutations additives sont décrites dans le détail.
-- `Préparation` : `existant en staging` | `BO` | `à créer avant chaque run`.
+- `Préparation` : `existant en staging` | `à créer au BO` | `à créer au BO à chaque run` (non réutilisable). Toutes réalisables par le CDP — un état non créable au BO bloque le scénario et se signale, il ne se maquille pas en instruction de préparation.
 
 | Nom | Rôle / état | Muté par | Préparation | Détail |
 |---|---|---|---|---|
 | L'admin | Admin BO | — | existant en staging | Droits complets, aucun état propre modifié |
-| Porteur A | Porteur de projet | — | BO | Onboarding paiement complété, **aucun** projet publié, pas d'IBAN virtuel. Gagne deux projets et un IBAN au scénario 1 — additif, aucun scénario n'assère un décompte de projets |
+| Porteur A | Porteur de projet | — | à créer au BO | Onboarding paiement complété, **aucun** projet publié, pas d'IBAN virtuel. Gagne deux projets et un IBAN au scénario 1 — additif, aucun scénario n'assère un décompte de projets |
 | Porteur avec IBAN | Porteur de projet | — | existant en staging | IBAN virtuel **déjà généré** — consulté en lecture seule au scénario 1 |
-| Porteur à archiver | Porteur de projet | sc3 | BO | Un projet publié, archivé définitivement au scénario 3 |
+| Porteur à archiver | Porteur de projet | sc3 | à créer au BO | Un projet publié, archivé définitivement au scénario 3 |
 | Investisseur non averti | Investisseur | — | existant en staging | KYC validé, statut **non averti**, solde suffisant. Souscrit puis annule au scénario 2 — l'état revient à son point de départ |
 | Investisseur averti | Investisseur | — | existant en staging | KYC validé, statut **averti**, solde suffisant. Souscrit au scénario 5 — additif |
-| Investisseur sans KYC | Investisseur | — | BO | KYC **non validé**. Sa tentative de souscription au scénario 4 est refusée : aucun état créé, réutilisable indéfiniment |
-| Projet en collecte | Projet publié | — | BO | Collecte ouverte. Reçoit les souscriptions des scénarios 2 et 5, et la tentative refusée du scénario 4 — additif |
+| Investisseur sans KYC | Investisseur | — | à créer au BO | KYC **non validé**. Sa tentative de souscription au scénario 4 est refusée : aucun état créé, réutilisable indéfiniment |
+| Projet en collecte | Projet publié | — | à créer au BO | Collecte ouverte. Reçoit les souscriptions des scénarios 2 et 5, et la tentative refusée du scénario 4 — additif |
 
 ## Scénarios
 
