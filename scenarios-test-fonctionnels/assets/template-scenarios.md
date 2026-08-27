@@ -4,30 +4,37 @@
 
 ## Contexte
 - Feature :
-- Brief utilisé (version initiale / éditée) :
+- Brief utilisé (version initiale / éditée, ou source si non versionné) :
 - Ticket(s) :
 - Repo / commit :
 - Mode : Standard (brief + code) | Dégradé (brief + tickets uniquement)
-- Monitoring : vérifié, aucune erreur récente | non accessible | erreurs trouvées (voir {scénario | point de vigilance})
+
+## Erreurs de monitoring liées à la feature
+
+*Section toujours présente. Si rien : "Aucune erreur récente liée à la feature" ou "Monitoring non accessible". Formuler l'effet observable, pas la trace technique — celle-ci va en annexe.*
+
+| Effet observé | Date | Occurrences | Traitement |
+|---|---|---|---|
+| {ce qui a échoué, en langage d'utilisateur} | | | {scénario N | point de vigilance N | hors périmètre : préciser} |
 
 ## Données de test à préparer
 
-Toutes les entités citées en pré-conditions figurent ici : comptes, mais aussi projets, enveloppes, réseaux, comptes externes. Réutiliser par défaut — une entrée dédiée uniquement si un scénario la mute de façon destructive.
+*Noms lisibles ("Investisseur A", "Projet A"), pas d'identifiant technique. Toutes les entités citées en pré-conditions figurent ici : comptes, projets, enveloppes, réseaux. Réutiliser par défaut — une entrée dédiée uniquement si un scénario la mute de façon destructive.*
 
-- `Muté par` : le scénario unique qui modifie l'état de façon destructive, ou `—`.
-- `Préparation` : `existant en staging` | `BO` | `seed dev`.
+- `Muté par` : le scénario unique qui modifie l'état de façon destructive, ou `—` (les mutations additives sont décrites dans le détail).
+- `Préparation` : `existant en staging` | `BO` | `à créer avant chaque run`.
 
-| Identifiant | Rôle / état | Muté par | Préparation | Détail |
+| Nom | Rôle / état | Muté par | Préparation | Détail |
 |---|---|---|---|---|
 | | | | | |
 
 ## Scénarios
 
-*Tous les scénarios de cette section sont jouables sans intervention d'un développeur. Ceux qui en demandent une sont regroupés plus bas.*
+*Tous les scénarios de ce fichier sont jouables sans intervention d'un développeur.*
 
 ### Scénario 1 — {Titre} ({Critique | Majeure | Mineure})
 - **Rôle / device** : {ex. investisseur KYC validé, mobile}
-- **Exécutable par** : {CDP seul | CDP + accès BO}
+- **Exécutable par** : {CDP seul | CDP + accès BO} — qualifie l'exécution des étapes, pas la préparation des données
 - **Pré-conditions** : {état des données, feature flags, conditions du rôle — aucun conditionnel}
 - **Étapes** :
   1. {Action}
@@ -40,34 +47,33 @@ Toutes les entités citées en pré-conditions figurent ici : comptes, mais auss
 {même structure}
 
 ### Scénario de régression — {Titre} ({criticité})
-{même structure — ou, si feature entièrement nouvelle : "Pas de régression pertinente — feature entièrement nouvelle." Jamais les deux.}
+{Vérifie qu'un parcours pré-existant, déclenché SANS passer par la nouvelle feature, est inchangé. Même structure.}
 
-## À faire avec un dev
-
-*Scénarios qui demandent une manipulation hors interface : activer ou couper un flag, simuler une panne de service externe, interrompre un traitement de fond, soumettre une action depuis un rôle non autorisé. Les écrire ici plutôt que de les omettre : la section devient une demande d'outillage, et ce qui n'est pas joué reste visible.*
-
-### {Titre} ({criticité})
-- **Exécutable par** : avec un dev
-- **Ce qu'il faut obtenir de l'équipe** : {toggle admin pour le flag, moyen de couper le service, compte de test, accès console...}
-- **Pré-conditions** :
-- **Étapes** :
-  1.
-- **Résultats attendus** :
-  1.
-
-{Scénario feature flag désactivé — obligatoire si la feature est derrière un flag : accéder à chaque adresse concernée, une entrée de résultat par adresse, page introuvable ou redirection, jamais une erreur serveur. Si aucun flag : "Pas de feature flag sur cette feature."}
+{S'il n'y a réellement aucune régression, remplacer ce scénario par le constat de la revue des surfaces partagées : "Aucune régression : la feature n'ajoute ni redirection après connexion, ni bloc sur un écran existant, ni email sur un déclencheur existant." Jamais les deux formes.}
 
 ## Points de vigilance
 - {Point — formulé en effet observable, sans nom de classe ni d'exception}
 
 ## Tableau de couverture
 
-| Contrainte | Scénario(s) associé(s) | Case traitée (✓/✗) | Critère d'acceptation |
+*`✓` = un résultat attendu de ce fichier assère la contrainte. Sinon `✗`, avec la raison en critère d'acceptation.*
+
+| Contrainte | Scénario(s) | ✓/✗ | Critère d'acceptation |
 |---|---|---|---|
 | | | | |
 
+## Contraintes non jouables en recette manuelle
+
+*Feature flag, panne de service, traitement de fond interrompu, soumission depuis un rôle non autorisé. Pour chacune : est-elle couverte par un test automatisé du repo ? Ces lignes figurent aussi dans le tableau de couverture, en `✗`.*
+
+| Contrainte | Couverte par un test automatisé | Suite à donner |
+|---|---|---|
+| | {oui — référence en annexe | non} | {rien à faire | demander un test à l'équipe | scénario dev sur demande} |
+
+*Proposer au CDP, après remise du fichier, des scénarios détaillés à jouer avec un développeur pour ces contraintes. Si accepté, les livrer dans un fichier séparé `scenarios-{slug-feature}-dev.md`.*
+
 ## Annexe technique (équipe back)
 
-*Références de code, classes d'exception, noms de jobs justifiant les points de vigilance. Aucun de ces éléments n'apparaît dans le corps du fichier.*
+*Références de code, classes d'exception, noms de jobs, chemins de tests. Aucun de ces éléments n'apparaît dans le corps du fichier.*
 
-- {Point de vigilance associé} → {référence technique}
+- {Point de vigilance ou contrainte associée} → {référence technique}

@@ -53,6 +53,25 @@ Donc : **un seul investisseur actif qui souscrit sur trois projets différents**
 
 ---
 
+## Nommer les données de test
+
+**Règle** — des noms lisibles : "Investisseur A", "Collaborateur B", "Projet A", "Enveloppe presque vide". Jamais d'identifiant technique en kebab-case entre accents graves.
+
+**Pourquoi** — `` `investisseur-pour-souscription` `` répété huit fois dans une pré-condition et quatre fois dans les étapes transforme un scénario en extrait de code. La personne qui exécute lit une phrase, pas une variable. Le poids visuel des accents graves fait perdre le fil du parcours.
+
+**Comparaison**
+
+| ❌ Identifiant technique | ✅ Nom lisible |
+|---|---|
+| "Sélectionner `investisseur-pour-souscription`, `projet-nominale`, montant 1 000 €, et `enveloppe-nominale`" | "Sélectionner Investisseur A, Projet A, un montant de 1 000 €, et Enveloppe A" |
+| "`cgp-collab-actif` connecté ; réseau `reseau-tantiem` contenant `cgp-responsable`" | "Collaborateur A connecté ; son réseau contient aussi le Responsable" |
+
+**Comment garder la traçabilité** — la table des données de test porte le nom lisible en première colonne et décrit l'état exact à préparer. Le lien se fait par le nom, pas par un identifiant. Quand un rôle suffit à lever l'ambiguïté (un seul admin dans tout le fichier), écrire "l'admin" plutôt que de lui inventer une étiquette.
+
+**Suffixes de lettres** — n'ajouter A, B, C que lorsque plusieurs entités du même type coexistent. Un fichier avec un seul investisseur écrit "l'investisseur".
+
+---
+
 ## Pré-conditions
 
 **Règle** — rôle de test avec ses conditions précises, feature flags actifs, état des données requis.
@@ -136,7 +155,7 @@ Donc : **un seul investisseur actif qui souscrit sur trois projets différents**
 
 **Piège** — un export asynchrone "qui marche" est facile à tester ; un export dont le job meurt à mi-chemin laisse quoi à l'écran ? Un spinner infini, une entrée d'historique fantôme, ou un message clair ? C'est la question qui compte, et elle n'est presque jamais posée.
 
-**Où le mettre** — la plupart de ces scénarios ne sont pas déclenchables par un CDP seul (couper un service externe, tuer un job). Ils vont dans la section "À faire avec un dev", pas dans le corps de la recette. Les écrire quand même : c'est ce qui transforme un angle mort en demande d'outillage.
+**Où le mettre** — un cas de défaillance déclenchable depuis l'interface (quota atteint, données incohérentes, double soumission) est un scénario de recette normal. Un cas qui demande de couper un service ou de tuer un traitement passe à l'étape 11 : on vérifie d'abord s'il est couvert par un test automatisé, et le scénario détaillé n'est rédigé que si le CDP le demande.
 
 ---
 
@@ -148,7 +167,34 @@ Donc : **un seul investisseur actif qui souscrit sur trois projets différents**
 
 **Découpage par exécutant** :
 - **Absence du point d'entrée** → jouable par un CDP seul : se connecter avec le rôle restreint, vérifier que le bouton, le lien ou le champ n'apparaît pas dans les écrans concernés. À mettre dans le corps de la recette.
-- **Refus de la soumission** → généralement pas jouable par un CDP. Deux exceptions à tenter d'abord : le formulaire laissé ouvert dans un onglet puis soumis après changement de compte, et le lien d'action copié depuis la session d'un rôle autorisé. Si aucune ne marche, la vérification va dans "À faire avec un dev" — jamais marquée couverte.
+- **Refus de la soumission** → généralement pas jouable par un CDP. Deux exceptions à tenter d'abord : le formulaire laissé ouvert dans un onglet puis soumis après changement de compte, et le lien d'action copié depuis la session d'un rôle autorisé. Si aucune ne marche, la contrainte passe à l'étape 11 — c'est typiquement le cas où un test de policy existe déjà côté repo, et où le vérifier vaut mieux que de faire jouer une requête manuelle au CDP.
+
+---
+
+## Contraintes non jouables en recette manuelle
+
+Référence de l'étape 11. Concerne les contraintes réelles qu'un CDP ne peut pas exercer depuis l'interface : basculer un feature flag, rendre un service externe injoignable, interrompre un traitement de fond, soumettre une action depuis un rôle non autorisé.
+
+**Pourquoi les sortir du fichier de recette** — un scénario que personne ne jouera dans la session alourdit la lecture, et son résultat attendu ne sera jamais coché. Le fichier de recette doit décrire ce qui va effectivement être fait. Mais supprimer la contrainte serait pire : elle disparaîtrait du radar alors que c'est souvent la plus risquée.
+
+### 1. Mesurer la couverture automatisée
+
+Chercher dans les tests du repo si la contrainte est déjà vérifiée : tests de policy pour les permissions, tests de requête pour les routes protégées, tests de job pour les traitements de fond, tests dédiés pour les feature flags.
+
+C'est **le seul endroit de la skill où les tests du repo sont lus**, et pour un usage précis : mesurer une couverture existante. Jamais pour déduire ce que la feature est censée faire — cette interdiction (étape 3) reste entière.
+
+### 2. Restituer honnêtement
+
+Une table dédiée dans le livrable, une ligne par contrainte : la contrainte, le verdict de couverture, la suite à donner. Et une ligne correspondante au tableau de couverture, en `✗`, puisque aucun résultat attendu du fichier ne l'assère.
+
+- **Couverte par un test automatisé** → rien à jouer manuellement, référence du test en annexe technique. C'est une bonne nouvelle, elle doit être visible : sans ça, le CDP croit à un trou.
+- **Non couverte** → trou réel, ni en recette ni en test. À signaler au CDP dans le message de remise : c'est souvent la demande la plus utile à porter à l'équipe, surtout quand la contrainte correspond à une erreur déjà vue en monitoring.
+
+### 3. Proposer les scénarios détaillés, ne pas les imposer
+
+Après avoir remis le fichier de recette, demander au CDP s'il veut en plus des scénarios détaillés pour ces contraintes, à jouer avec un développeur. S'il accepte : fichier séparé `scenarios-{slug-feature}-dev.md`, un scénario par contrainte, avec pour chacun **ce qu'il faut obtenir de l'équipe** (interrupteur d'activation, moyen de couper le service, accès pour rejouer une soumission).
+
+Ne jamais les intégrer au fichier principal, même en fin de document : ils ne seront pas joués dans la même session.
 
 ---
 
@@ -196,9 +242,23 @@ Donc : **un seul investisseur actif qui souscrit sur trois projets différents**
 
 **Règle** — si la feature modifie un comportement existant (constaté à l'étape 2), inclure un scénario dédié qui vérifie que l'ancien comportement encore attendu fonctionne toujours.
 
-**Si la feature est entièrement nouvelle** — l'indiquer explicitement ("pas de régression pertinente — feature entièrement nouvelle") plutôt que d'omettre la section : une section absente ne se distingue pas d'un oubli.
+**"Feature entièrement nouvelle" est presque toujours faux.** Une feature qui ajoute un espace, un rôle ou un tunnel à une application existante modifie des **surfaces partagées**. Avant de conclure à l'absence de régression, passer cette liste et dire ce qu'on a constaté :
 
-**Une seule forme, jamais les deux.** Un fichier qui contient à la fois un scénario titré "Régression" et une section disant "feature entièrement nouvelle, pas de régression" se contredit — le lecteur ne sait plus si le scénario doit être joué. Vérifier aussi que le scénario titré régression en est bien une : un scénario qui teste l'intégration entre deux nouvelles parties de la feature (ex. un investisseur finalise une souscription créée par son CGP, les deux étant nouveaux) est un **scénario d'intégration**, à renommer et à laisser dans la numérotation normale.
+| Surface partagée | Question à se poser |
+|---|---|
+| Redirection après connexion | Les utilisateurs existants atterrissent-ils toujours au même endroit ? |
+| Tableau de bord existant | Un bloc, une card ou un compteur y a-t-il été ajouté ? |
+| Navigation commune | Un lien, un menu ou un libellé a-t-il changé pour les rôles existants ? |
+| Tunnel de paiement / signature | Peut-il désormais être atteint par un chemin nouveau ? |
+| Emails déjà envoyés | Un envoi existant a-t-il été modifié, ou un nouveau s'ajoute-t-il au même déclencheur ? |
+| Listes et filtres existants | Une colonne, un filtre ou un tri a-t-il été ajouté à un écran partagé ? |
+| Modèle de permissions | Un rôle existant a-t-il gagné ou perdu un accès ? |
+
+**Ce que vérifie le scénario de régression** — le parcours pré-existant, déclenché **sans passer par la nouvelle feature**, fonctionne à l'identique. Exemple : un espace CGP est ajouté, et les souscriptions peuvent maintenant être créées par un CGP. La régression n'est pas "l'investisseur finalise une réservation créée par son CGP" — ça, c'est de l'intégration entre deux parties nouvelles. La régression, c'est "**l'investisseur souscrit de lui-même, sans aucun CGP impliqué**, et son parcours est inchangé" : même tableau de bord, même tunnel, mêmes emails, aucune card parasite.
+
+**Une seule forme, jamais les deux.** Un fichier qui contient à la fois un scénario titré "Régression" et une mention "feature entièrement nouvelle, pas de régression" se contredit — le lecteur ne sait plus si le scénario doit être joué. Et un scénario qui teste l'intégration entre deux parties nouvelles est un **scénario d'intégration**, à renommer.
+
+**Si aucune surface partagée n'est touchée** — le dire en citant la revue ("aucune régression : la feature n'ajoute ni redirection, ni bloc sur un écran existant, ni email sur un déclencheur existant") plutôt qu'en affirmant "feature entièrement nouvelle". La première formulation se vérifie, la seconde non.
 
 ---
 

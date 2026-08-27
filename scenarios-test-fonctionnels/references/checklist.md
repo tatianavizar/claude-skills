@@ -14,6 +14,7 @@ Les items sont classés par gravité : les trois premiers sont ceux qui produise
 ## Coût de préparation
 
 - [ ] Table "Données de test à préparer" : toutes les entités citées en pré-conditions y figurent (comptes, projets, enveloppes, réseaux), colonnes **Muté par** et **Préparation** renseignées
+- [ ] Noms lisibles partout ("Investisseur A", "Projet A") — aucun identifiant technique en kebab-case entre accents graves, et aucun suffixe de lettre là où une seule entité du type existe
 - [ ] **Chasse aux données de test superflues** : pour chaque entrée mono-scénario, classer la mutation (nulle / additive / réversible / destructive). Seule une mutation destructive justifie une entrée dédiée — sinon fusionner. Supprimer toute entrée citée dans aucune pré-condition
 - [ ] Balayage transverse : chaque entité mutée de façon destructive est absente de **tous** les autres scénarios, y compris non adjacents
 
@@ -21,19 +22,20 @@ Les items sont classés par gravité : les trois premiers sont ceux qui produise
 
 - [ ] Aucun nom de classe, méthode, attribut, exception, job ou token CSS dans le corps du fichier — uniquement dans l'annexe technique
 - [ ] Aucun conditionnel dans les étapes ("si ce mécanisme est exposé")
-- [ ] Champ **Exécutable par** renseigné sur chaque scénario, et tous les `avec un dev` regroupés dans leur section avec ce qu'il faut obtenir de l'équipe
+- [ ] Champ **Exécutable par** renseigné sur chaque scénario, avec `CDP seul` ou `CDP + accès BO` seulement — un scénario qui demanderait un dev n'a pas sa place dans ce fichier
 - [ ] Aucun point de vigilance utilisé pour évacuer un scénario simplement pénible à monter
 
 ## Couverture
 
-- [ ] Nominal, cas limites, résilience — les trois présents, dont au moins un cas de défaillance asynchrone ou d'infrastructure si la feature en contient
-- [ ] Permissions : chaque action réservée à un rôle est testée en absence de point d'entrée (corps de la recette) **et** en refus de soumission (corps si jouable, sinon section dev)
-- [ ] Régression : soit un scénario, soit une mention d'absence explicite — pas les deux
+- [ ] Nominal, cas limites, résilience — les trois présents, avec au moins un cas de défaillance jouable depuis l'interface
+- [ ] Permissions : pour chaque action réservée à un rôle, l'absence du point d'entrée est vérifiée dans un scénario ; le refus de soumission figure dans la table des contraintes non jouables
+- [ ] **Régression : la revue des surfaces partagées a été faite** (redirection après connexion, tableau de bord existant, navigation commune, tunnel de paiement, emails, listes et filtres, permissions des rôles existants) — un scénario si l'une est touchée, sinon le constat de la revue. Jamais "feature entièrement nouvelle" sans cette revue, et jamais les deux formes
 - [ ] Responsive mutualisé dans des scénarios existants, aucun scénario responsive dédié
 - [ ] Tableau de couverture : une ligne par contrainte relevée en étapes 2 à 4, chacune vérifiable sans lire le code
+- [ ] Table des contraintes non jouables remplie, avec pour chacune le verdict de couverture automatisée — et les contraintes ni couvertes en recette ni en test signalées au CDP dans le message de remise
 
 ## Contexte du fichier
 
 - [ ] Mode indiqué (standard / dégradé), avec avertissement en tête si dégradé
-- [ ] Monitoring tracé explicitement, même si rien n'a été trouvé
-- [ ] Version du brief et ticket(s) référencés dans le contexte
+- [ ] **Section "Erreurs de monitoring liées à la feature" présente**, même vide, avec une ligne par erreur : effet observable, date, occurrences, traitement. Jamais réduite à une mention dans le contexte
+- [ ] Brief et ticket(s) référencés, avec la version si le brief est versionné — sinon le dire
