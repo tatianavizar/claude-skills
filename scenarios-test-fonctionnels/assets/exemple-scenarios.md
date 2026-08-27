@@ -21,6 +21,7 @@ Ce que l'exemple illustre :
 - Ticket(s) : CAPS-1428, CAPS-1431
 - Repo / commit : `app-plateforme` @ `a3f19c2`
 - Mode : Standard (brief + code)
+- Divergences code ↔ brief : 1 détectée, tranchée au round 1 (réutilisation du wallet par défaut, section ajoutée au brief depuis)
 
 ## Erreurs de monitoring liées à la feature
 

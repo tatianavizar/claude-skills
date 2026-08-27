@@ -10,6 +10,7 @@
 - Ticket(s) :
 - Repo / commit :
 - Mode : Standard (brief + code) | Dégradé sans code (brief + tickets seuls) | Dégradé sans attendu (code seul)
+- Divergences code ↔ brief : {N détectées, tranchées au round 1 | aucune divergence non documentée — comparaison faite}
 
 ## Erreurs de monitoring liées à la feature
 

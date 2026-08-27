@@ -67,6 +67,8 @@ Chaque erreur est ensuite rattachée à un scénario de résilience (étape 7), 
 ### 5. Détecter les divergences non documentées
 Lister ce qui diverge entre attendu (étape 2) et réel (étape 3) sans avoir été tranché quelque part (brief, ticket, commentaire). Écart mineur et non ambigu → note de vigilance. Écart qui change le comportement testable → question de contexte.
 
+**Cette étape laisse une trace obligatoire dans le livrable** — une ligne du bloc Contexte : `Divergences code ↔ brief : N détectées, tranchées au round 1` ou `aucune divergence non documentée — comparaison faite`. Sans elle, un fichier produit sans avoir comparé le brief au code est indistinguable d'un fichier où la comparaison n'a rien trouvé : les deux passent la checklist et affichent le mode standard. C'est l'étape qui justifie la skill, elle ne peut pas être la seule sans empreinte vérifiable.
+
 ### 6. Round 1 — questions (max 5, seulement si nécessaire)
 Un seul message, numérotées, chacune avec le contexte minimal (extrait brief/ticket vs extrait code). Attendre la réponse. Aucune divergence non documentée → passer à l'étape 7 et le dire explicitement.
 
