@@ -51,7 +51,7 @@ Parcourir uniquement le code pertinent à la feature (routes/controllers, modèl
 **Ne pas consulter les specs/tests existants du repo** : cela biaiserait la comparaison brief ↔ code. Seul le code applicatif fait foi pour "ce qui existe".
 
 ### 4. Vérifier les erreurs déjà connues
-Si un monitoring est accessible, chercher les erreurs récentes liées à la feature. Chaque erreur devient un scénario de résilience (étape 7) ou un point de vigilance (étape 9) si non testable simplement.
+Si un monitoring est accessible, chercher les erreurs récentes liées à la feature. Chaque erreur devient un scénario de résilience (étape 7), un scénario de la section "À faire avec un dev" si la reproduction demande une manipulation hors interface, ou un point de vigilance (étape 9) si elle n'est reproductible d'aucune façon.
 
 **Toujours tracer le résultat dans le contexte du fichier de sortie**, y compris quand rien n'est trouvé ("Monitoring vérifié : aucune erreur récente" / "Monitoring non accessible").
 
@@ -74,7 +74,7 @@ Règles (détail et pièges dans `references/regles-redaction.md`) :
 - **Données de test : réutiliser par défaut, dupliquer par exception.** Entrée dédiée seulement si la mutation est **destructive** (archivage définitif, suppression, changement de rattachement, statut irréversible). Mutation nulle (consultation, **soumission refusée**), additive ou réversible → réutiliser. Réutiliser le sujet coûteux (compte, KYC), dupliquer l'objet bon marché (projet, montant).
 - **Pré-conditions explicites** : rôle et ses conditions précises, feature flags, état des données. Aucun conditionnel dans les étapes ("si ce mécanisme est exposé") — l'incertitude part en question ou en point de vigilance, le livrable affirme.
 - **Le livrable ne cite jamais de code** : ni classe, ni méthode, ni attribut, ni exception, ni job, ni token CSS. Les références techniques vont en annexe pour l'équipe back, traduites en effet observable dans le corps.
-- **Champ `Exécutable par` sur chaque scénario** : `PM seul` / `PM + accès BO` / `avec un dev`. Tout scénario `avec un dev` sort du corps de la recette et va dans la section dédiée.
+- **Champ `Exécutable par` sur chaque scénario** : `CDP seul` / `CDP + accès BO` / `avec un dev`. Tout scénario `avec un dev` sort du corps de la recette et va dans la section dédiée.
 - **Ordre = logique métier du parcours**, jamais la criticité.
 - **Criticité dans le titre** entre parenthèses : `Critique` / `Majeure` / `Mineure`.
 - **Étapes et résultats attendus en deux listes numérotées parallèles**, une entrée de résultat par étape — jamais de résultat groupé ("1–5. chaque URL renvoie 404").
@@ -90,16 +90,18 @@ Deux exigences non négociables, détaillées dans `references/regles-redaction.
 - **Résilience** : au moins un scénario de défaillance infra/asynchrone (réseau, timeout, job de fond qui échoue, quota, échec silencieux) + un par erreur de l'étape 4. Traitement asynchrone dans la feature (job, webhook, temps réel, export) → le cas "le traitement échoue" est obligatoire. Non déclenchable en recette → point de vigilance, pas une omission.
 - **Permissions** : pour chaque action réservée à un rôle, vérifier l'absence du point d'entrée **et** le refus de la soumission par un rôle non autorisé.
 
-Volume indicatif pour calibrer : **6 à 12 scénarios** pour une feature de taille moyenne (un parcours, 2-3 rôles). Sortir de cette fourchette est légitime, mais au-delà de ~15 vérifier d'abord qu'il n'y a pas un découpage à mutualiser.
+Volume indicatif pour calibrer : **6 à 12 scénarios** pour une feature de taille moyenne (un parcours, 2-3 rôles), section "À faire avec un dev" comprise. Sortir de cette fourchette est légitime, mais au-delà de ~15 vérifier d'abord qu'il n'y a pas un découpage à mutualiser.
 
 ### 8. Round 2 — questions (max 5, seulement si nécessaire)
 Uniquement si la rédaction a fait émerger de **nouvelles** divergences non documentées. Mêmes règles que le round 1.
 
 ### 9. Points de vigilance
-Hors scénarios formels : ce qui mérite un œil humain en recette mais n'est pas testable simplement par un CDP — dette technique, zone fragile, dépendance externe, erreur de monitoring non reproductible, écart mineur code/brief, question restée sans réponse.
+Hors scénarios formels : ce qui mérite un œil humain en recette mais n'est **pas testable du tout** — dette technique, zone fragile, dépendance externe, erreur de monitoring non reproductible, écart mineur code/brief, question restée sans réponse, comportement non implémenté.
+
+**Frontière avec la section "À faire avec un dev"** : testable avec l'aide d'un dev → scénario dans cette section, avec ce qu'il faut obtenir de l'équipe. Non testable même avec un dev → point de vigilance. Ne jamais utiliser un point de vigilance pour évacuer un scénario simplement pénible à monter.
 
 ### 10. Tableau de couverture final
-Une ligne par contrainte technique ou fonctionnelle relevée en étapes 2 à 4. **Seules les contraintes observables par un CDP** — observable = vérifiable via UI, API, panel admin ou monitoring, sans lire le code. Contrainte vérifiable uniquement dans le code : chercher à la rendre observable autrement (admin, logs, dashboard) et la reformuler en critère d'acceptation ; sinon, ne pas la mettre dans le tableau.
+Une ligne par contrainte technique ou fonctionnelle relevée en étapes 2 à 4. **Seules les contraintes observables** — observable = vérifiable via UI, API, panel admin ou monitoring, sans lire le code. Une contrainte vérifiable dans un scénario de la section "À faire avec un dev" reste observable et entre dans le tableau : c'est la manipulation qui demande un dev, pas la vérification. Contrainte vérifiable uniquement en lisant le code : chercher à la rendre observable autrement (admin, logs, dashboard) et la reformuler en critère d'acceptation ; sinon, ne pas la mettre dans le tableau.
 
 **Traçabilité — règle dure.** Pour chaque ligne marquée ✓, relire le scénario cité et retrouver le **résultat attendu numéroté** qui assère littéralement la contrainte. Aucun résultat correspondant, ou résultat portant sur autre chose → **compléter le scénario**, ou passer la ligne en ✗ avec renvoi en point de vigilance. Jamais laisser le ✓.
 
@@ -122,7 +124,7 @@ Un fichier Markdown par feature : `scenarios-{slug-feature}.md`, structuré selo
 - [ ] Aucun conditionnel dans les étapes ("si ce mécanisme est exposé")
 - [ ] Champ **Exécutable par** renseigné sur chaque scénario, et tous les `avec un dev` regroupés dans leur section avec ce qu'il faut obtenir de l'équipe
 - [ ] Couverture : nominal, cas limites, résilience — les trois présents, dont au moins un cas de défaillance asynchrone/infra si la feature en contient
-- [ ] Permissions : chaque action réservée à un rôle est testée en absence de point d'entrée **et** en refus d'écriture
+- [ ] Permissions : chaque action réservée à un rôle est testée en absence de point d'entrée (corps de la recette) **et** en refus de soumission (corps si jouable, sinon section dev)
 - [ ] Régression : soit un scénario, soit une mention d'absence — pas les deux
 - [ ] Mode indiqué (standard / dégradé), avec avertissement en tête si dégradé
 - [ ] Monitoring tracé explicitement, même si rien n'a été trouvé

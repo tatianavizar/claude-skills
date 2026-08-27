@@ -27,7 +27,7 @@ Toutes les entités citées en pré-conditions figurent ici : comptes, mais auss
 
 ### Scénario 1 — {Titre} ({Critique | Majeure | Mineure})
 - **Rôle / device** : {ex. investisseur KYC validé, mobile}
-- **Exécutable par** : {PM seul | PM + accès BO}
+- **Exécutable par** : {CDP seul | CDP + accès BO}
 - **Pré-conditions** : {état des données, feature flags, conditions du rôle — aucun conditionnel}
 - **Étapes** :
   1. {Action}
@@ -55,7 +55,7 @@ Toutes les entités citées en pré-conditions figurent ici : comptes, mais auss
 - **Résultats attendus** :
   1.
 
-{Scénario feature flag désactivé — obligatoire si la feature est derrière un flag : accès à chaque URL concernée, une entrée de résultat par URL, 404 ou redirection, jamais une 500. Si aucun flag : "Pas de feature flag sur cette feature."}
+{Scénario feature flag désactivé — obligatoire si la feature est derrière un flag : accéder à chaque adresse concernée, une entrée de résultat par adresse, page introuvable ou redirection, jamais une erreur serveur. Si aucun flag : "Pas de feature flag sur cette feature."}
 
 ## Points de vigilance
 - {Point — formulé en effet observable, sans nom de classe ni d'exception}

@@ -4,8 +4,8 @@ Exemple complet de fichier généré par cette skill, à consulter en cas de dou
 
 Ce que l'exemple illustre :
 
-- **8 entrées de données de test pour 5 scénarios**, pas une par scénario. Un seul porteur sert trois scénarios parce que ses mutations sont additives ; un seul projet reçoit deux souscriptions.
-- Les deux seules entrées dédiées correspondent aux deux mutations destructives du fichier (un archivage définitif).
+- **8 entrées de données de test pour 7 scénarios**, pas une par scénario. Un seul porteur sert deux scénarios parce que ses mutations sont additives ; un seul projet reçoit deux souscriptions et une tentative refusée.
+- **Une seule entrée dédiée** (`porteur-archive`), pour la seule mutation destructive du fichier : un archivage définitif.
 - **Champ `Exécutable par`** sur chaque scénario, et les deux scénarios qui demandent un développeur isolés dans leur section.
 - **Aucun nom de classe, d'exception ou de job dans le corps** — tout est en annexe technique.
 - Criticité dans les titres, listes parallèles où chaque résultat énonce un état observable, ordre métier, mutualisation (le scénario 1 enchaîne trois actions du même rôle), responsive intégré aux scénarios existants.
@@ -47,7 +47,7 @@ Ce que l'exemple illustre :
 
 ### Scénario 1 — Wallets par projet et IBAN virtuel du porteur (Majeure)
 - **Rôle / device** : `admin-recette`, desktop puis **mobile** à l'étape 7
-- **Exécutable par** : PM + accès BO
+- **Exécutable par** : CDP + accès BO
 - **Pré-conditions** : `porteur-actif` sans projet publié et sans IBAN virtuel ; `porteur-iban` disponible en lecture ; multi-wallets actif sur l'environnement
 - **Étapes** :
   1. Ouvrir la fiche de `porteur-actif` et noter l'identifiant de son wallet par défaut
@@ -68,7 +68,7 @@ Ce que l'exemple illustre :
 
 ### Scénario 2 — Souscription non avertie : séquestre puis restitution en rétractation (Critique)
 - **Rôle / device** : `investisseur-nonaverti` (**mobile** à l'étape 1) puis `admin-recette`, desktop
-- **Exécutable par** : PM + accès BO
+- **Exécutable par** : CDP + accès BO
 - **Pré-conditions** : `projet-collecte` en collecte ouverte ; `investisseur-nonaverti` KYC validé, statut non averti, solde suffisant ; enchaîner les étapes 1 à 4 **sans attendre l'expiration du délai de rétractation**
 - **Étapes** :
   1. Depuis le front mobile (375 px), souscrire et payer sur `projet-collecte`
@@ -83,7 +83,7 @@ Ce que l'exemple illustre :
 
 ### Scénario 3 — Archivage d'un projet : wallet conservé, collecte fermée (Critique)
 - **Rôle / device** : `admin-recette`, desktop
-- **Exécutable par** : PM + accès BO
+- **Exécutable par** : CDP + accès BO
 - **Pré-conditions** : `porteur-archive` avec un projet publié — entrée dédiée, l'archivage est irréversible ; multi-wallets actif
 - **Étapes** :
   1. Ouvrir la fiche du projet de `porteur-archive` et noter l'identifiant du wallet de collecte
@@ -98,7 +98,7 @@ Ce que l'exemple illustre :
 
 ### Scénario 4 — KYC non validé : souscription refusée (Majeure)
 - **Rôle / device** : `investisseur-sanskyc`, desktop
-- **Exécutable par** : PM seul
+- **Exécutable par** : CDP seul
 - **Pré-conditions** : `investisseur-sanskyc` avec KYC non validé ; `projet-collecte` en collecte ouverte
 - **Étapes** :
   1. Depuis le front, ouvrir `projet-collecte` et lancer une souscription
@@ -109,7 +109,7 @@ Ce que l'exemple illustre :
 
 ### Scénario 5 — Régression : souscription d'un investisseur averti (Critique)
 - **Rôle / device** : `investisseur-averti` puis `admin-recette`, desktop
-- **Exécutable par** : PM + accès BO
+- **Exécutable par** : CDP + accès BO
 - **Pré-conditions** : `projet-collecte` en collecte ouverte ; `investisseur-averti` KYC validé, statut averti, solde suffisant ; multi-wallets actif
 - **Étapes** :
   1. Souscrire et payer sur `projet-collecte`

@@ -40,7 +40,7 @@ Donc : **un seul investisseur actif qui souscrit sur trois projets différents**
 - **Données de test inutilisées** : toute entité déclarée dans la table mais citée dans aucune pré-condition est à supprimer. Elles s'accumulent quand la rédaction évolue et gonflent le coût de prep pour rien.
 - **Données de test mono-scénario** : chaque entité dont la colonne `Muté par` ne cite qu'un scénario doit passer le test de la classification ci-dessus. Si la mutation n'est pas destructive, fusionner avec une donnée de test existante.
 - **Colonne `Muté par`** : un seul scénario, ou `—` si l'entité n'est jamais mutée de façon destructive. Deux scénarios destructifs dans la case = défaut.
-- **Colonne `Préparation`** : `existant en staging` / `BO` / `seed dev`. Rend le coût visible avant de commencer et identifie ce qui bloque un PM sans accès.
+- **Colonne `Préparation`** : `existant en staging` / `BO` / `seed dev`. Rend le coût visible avant de commencer et identifie ce qui bloque un CDP sans accès.
 - **Entités non-rôles** : projets, enveloppes, réseaux, comptes externes cités en pré-conditions doivent figurer dans la table. Une pré-condition qui référence un identifiant absent est une donnée de test que personne ne préparera.
 
 ### Pièges
@@ -136,7 +136,7 @@ Donc : **un seul investisseur actif qui souscrit sur trois projets différents**
 
 **Piège** — un export asynchrone "qui marche" est facile à tester ; un export dont le job meurt à mi-chemin laisse quoi à l'écran ? Un spinner infini, une entrée d'historique fantôme, ou un message clair ? C'est la question qui compte, et elle n'est presque jamais posée.
 
-**Où le mettre** — la plupart de ces scénarios ne sont pas déclenchables par un PM seul (couper un service externe, tuer un job). Ils vont dans la section "À faire avec un dev", pas dans le corps de la recette. Les écrire quand même : c'est ce qui transforme un angle mort en demande d'outillage.
+**Où le mettre** — la plupart de ces scénarios ne sont pas déclenchables par un CDP seul (couper un service externe, tuer un job). Ils vont dans la section "À faire avec un dev", pas dans le corps de la recette. Les écrire quand même : c'est ce qui transforme un angle mort en demande d'outillage.
 
 ---
 
@@ -147,8 +147,8 @@ Donc : **un seul investisseur actif qui souscrit sur trois projets différents**
 **Pourquoi** — un `Accès refusé` sur une page ne prouve rien sur la protection de l'action correspondante. Une interface qui cache le bouton tout en acceptant la soumission est une escalade de privilèges classique, invisible si on ne teste que la navigation.
 
 **Découpage par exécutant** :
-- **Absence du point d'entrée** → jouable par un PM seul : se connecter avec le rôle restreint, vérifier que le bouton, le lien ou le champ n'apparaît pas dans les écrans concernés. À mettre dans le corps de la recette.
-- **Refus de la soumission** → généralement pas jouable par un PM. Deux exceptions à tenter d'abord : le formulaire laissé ouvert dans un onglet puis soumis après changement de compte, et le lien d'action copié depuis la session d'un rôle autorisé. Si aucune ne marche, la vérification va dans "À faire avec un dev" — jamais marquée couverte.
+- **Absence du point d'entrée** → jouable par un CDP seul : se connecter avec le rôle restreint, vérifier que le bouton, le lien ou le champ n'apparaît pas dans les écrans concernés. À mettre dans le corps de la recette.
+- **Refus de la soumission** → généralement pas jouable par un CDP. Deux exceptions à tenter d'abord : le formulaire laissé ouvert dans un onglet puis soumis après changement de compte, et le lien d'action copié depuis la session d'un rôle autorisé. Si aucune ne marche, la vérification va dans "À faire avec un dev" — jamais marquée couverte.
 
 ---
 
