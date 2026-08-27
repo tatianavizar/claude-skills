@@ -46,6 +46,11 @@ Règles appliquées :
 - **`description` en frontmatter** = quoi + quand, avec les formulations indirectes et les déclencheurs FR *et* EN.
 - **`allowed-tools`** limité au strict nécessaire (lecture + écriture du livrable, pas de Bash arbitraire).
 
+## À faire avant publication
+
+- **Tampon de version dans le livrable** — une ligne `Skill : vN` dans le bloc Contexte du fichier généré, incrémentée à chaque évolution des règles. Sans elle, un fichier de recette relu plus tard n'indique pas à quelles règles il obéit. À poser au moment de figer la première version publiée, pas avant.
+- **Premier run réel de bout en bout** — les règles actuelles ont toutes été écrites en auditant des sorties produites par des versions antérieures. Aucune n'a encore tourné dans la version en place.
+
 ## Repackager un bundle
 
 ```bash

@@ -35,6 +35,6 @@ Les items sont classés par gravité : les trois premiers sont ceux qui produise
 
 ## Contexte du fichier
 
-- [ ] Mode indiqué (standard / dégradé), avec avertissement en tête si dégradé
+- [ ] Mode indiqué (standard / dégradé sans code / dégradé sans attendu), avec l'avertissement correspondant en tête du fichier. En mode sans attendu, la liste des règles métier à confirmer par le CDP est présente
 - [ ] **Section "Erreurs de monitoring liées à la feature" présente**, même vide, avec une ligne par erreur : effet observable, date, occurrences, traitement. Jamais réduite à une mention dans le contexte
 - [ ] Brief et ticket(s) référencés, avec la version si le brief est versionné — sinon le dire

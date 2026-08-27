@@ -41,7 +41,9 @@ Si le nom ou le périmètre n'est **pas donné explicitement**, le demander avan
 
 Une fois identifiée : confirmer le parcours exact, les rôles concernés (FO/BO), le ticket, la version du brief.
 
-**Si le repo n'est pas accessible** (droits, connecteur en panne) → **mode dégradé** plutôt que blocage : générer depuis le brief et les tickets seuls, et le signaler en tête du fichier de sortie. Ne jamais présenter des scénarios brief-only comme confrontés au code.
+**Si le repo n'est pas accessible** (droits, connecteur en panne) → **mode dégradé "sans code"** plutôt que blocage : générer depuis le brief et les tickets seuls, et le signaler en tête du fichier de sortie. Ne jamais présenter des scénarios brief-only comme confrontés au code.
+
+**Si le brief n'est pas accessible ou est vide** (outil en panne, carte de ticket sans contenu, droits manquants) → le dire au CDP et lui demander une source de comportement attendu avant de continuer : un autre document, les critères d'acceptation du ticket, ou une description à l'oral. S'il n'y en a aucune, passer en **mode dégradé "sans attendu"** : les scénarios décrivent alors ce que le code fait, pas ce qu'il devrait faire. C'est le mode le plus risqué — un bug présent dans le code y devient un résultat attendu. Le signaler en tête du fichier, et remplacer les questions de divergence (étapes 6 et 8) par une liste de règles métier à confirmer par le CDP.
 
 ### 2. Extraire le comportement attendu
 Brief (initial + édité) + ticket(s) → règles métier, critères d'acceptation, cas limites anticipés, décisions tranchées vs questions ouvertes. Noter si la feature est **un ajout neuf** ou **une modification d'un comportement existant** (sert à l'étape 7 pour la régression).

@@ -1,13 +1,15 @@
 # Scénarios de test — {Nom de la feature}
 
-> ⚠️ **Mode dégradé** — {bloc à supprimer si le repo était accessible} Scénarios générés sans accès au code : comportement réel du repo non vérifié, à confirmer manuellement avant recette.
+> ⚠️ **Mode dégradé sans code** — {bloc à supprimer si le repo était accessible} Scénarios générés sans accès au code : comportement réel non vérifié, à confirmer manuellement avant recette.
+
+> 🚨 **Mode dégradé sans attendu** — {bloc à supprimer si le brief était accessible} Aucun brief ni critère d'acceptation disponible : les scénarios décrivent ce que le code **fait**, pas ce qu'il **devrait** faire. Un bug présent dans le code apparaît donc ici comme un résultat attendu. Les règles métier listées en fin de fichier doivent être confirmées par le CDP avant toute recette.
 
 ## Contexte
 - Feature :
 - Brief utilisé (version initiale / éditée, ou source si non versionné) :
 - Ticket(s) :
 - Repo / commit :
-- Mode : Standard (brief + code) | Dégradé (brief + tickets uniquement)
+- Mode : Standard (brief + code) | Dégradé sans code (brief + tickets seuls) | Dégradé sans attendu (code seul)
 
 ## Erreurs de monitoring liées à la feature
 
