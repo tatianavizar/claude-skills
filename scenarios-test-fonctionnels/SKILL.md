@@ -15,8 +15,9 @@ Le **code applicatif** fait foi pour "ce qui existe réellement". Le **brief + l
 
 | Fichier | Quand le lire |
 |---|---|
-| `references/regles-redaction.md` | **Obligatoire** avant l'étape 7 — règles de rédaction détaillées et leurs pièges |
+| `references/regles-redaction.md` | **Obligatoire** avant l'étape 7 — les 14 règles, la couverture exigée, le volume |
 | `assets/template-scenarios.md` | **Obligatoire** avant l'étape 7 — structure du fichier de sortie |
+| `references/contraintes-non-jouables.md` | **Obligatoire** à l'étape 11 — ce qui sort de la recette et comment le restituer |
 | `references/checklist.md` | **Obligatoire** à l'étape 12 — vérification avant livraison |
 | `assets/exemple-scenarios.md` | Avant l'étape 7 si le niveau de granularité attendu n'est pas clair |
 
@@ -101,7 +102,7 @@ Une ligne ✓ assortie d'une réserve ("à vérifier", "non testé explicitement
 
 ### 11. Contraintes non jouables en recette manuelle
 
-Basculer un feature flag, couper un service externe, tuer un traitement de fond, soumettre une action depuis un rôle non autorisé : ces contraintes sortent des scénarios sans disparaître. Procédure détaillée dans `references/regles-redaction.md`.
+Basculer un feature flag, couper un service externe, tuer un traitement de fond, soumettre une action depuis un rôle non autorisé : ces contraintes sortent des scénarios sans disparaître. **Lire `references/contraintes-non-jouables.md`** — procédure complète et les trois cas habituels avec la couverture automatisée à y chercher.
 
 1. **Mesurer la couverture automatisée** — chercher dans les tests du repo si la contrainte est déjà vérifiée. Seul moment où la skill lit les tests.
 2. **Restituer dans une table dédiée** + une ligne `✗` au tableau de couverture. Couverte → référence du test en annexe. Non couverte → trou réel, à signaler au CDP dans le message de remise.

@@ -1,6 +1,6 @@
 # Règles de rédaction — détail et pièges
 
-Référence des étapes 7 et 11 de `SKILL.md`. Chaque section reprend une règle, son *pourquoi*, et le piège concret qui la rend nécessaire.
+Référence de l'étape 7 de `SKILL.md`. Chaque section reprend une règle, son *pourquoi*, et le piège concret qui la rend nécessaire.
 
 ## Les 14 règles
 
@@ -14,7 +14,7 @@ Référence des étapes 7 et 11 de `SKILL.md`. Chaque section reprend une règle
 | 4. **Noms lisibles** ("Investisseur A"), aucun identifiant technique | [Nommer](#nommer-les-données-de-test) |
 | 5. **Pré-conditions explicites**, aucun conditionnel dans les étapes | [Pré-conditions](#pré-conditions) · [Conditionnels](#aucun-conditionnel-dans-les-étapes) |
 | 6. **Le livrable ne cite jamais de code** — références techniques en annexe | [Vocabulaire](#vocabulaire--le-livrable-ne-cite-jamais-de-code) |
-| 7. **Tout scénario est jouable par un CDP** (il a le BO et l'application) ; le reste part à l'étape 11 | [Contraintes non jouables](#contraintes-non-jouables-en-recette-manuelle) |
+| 7. **Tout scénario est jouable par un CDP** (il a le BO et l'application) ; le reste part à l'étape 11 | `contraintes-non-jouables.md` |
 | 8. **Ordre = logique métier**, jamais la criticité | [Ordre](#ordre-des-scénarios) |
 | 9. **Criticité dans le titre** : `Critique` / `Majeure` / `Mineure` | [Criticité](#criticité) |
 | 10. **Deux listes numérotées parallèles**, une entrée de résultat par étape | [Étapes et résultats](#étapes-et-résultats-attendus) |
@@ -200,46 +200,17 @@ Donc : **un seul investisseur actif qui souscrit sur trois projets différents**
 
 **Piège** — un export asynchrone "qui marche" est facile à tester ; un export dont le job meurt à mi-chemin laisse quoi à l'écran ? Un spinner infini, une entrée d'historique fantôme, ou un message clair ? C'est la question qui compte, et elle n'est presque jamais posée.
 
-**Où le mettre** — un cas de défaillance déclenchable depuis l'interface (quota atteint, données incohérentes, double soumission) est un scénario de recette normal. Un cas qui demande de couper un service ou de tuer un traitement passe à l'étape 11 : on vérifie d'abord s'il est couvert par un test automatisé, et le scénario détaillé n'est rédigé que si le CDP le demande.
+**Où le mettre** — un cas déclenchable depuis l'interface (quota atteint, données incohérentes, double soumission) est un scénario de recette normal. Un cas qui demande de couper un service ou de tuer un traitement relève de `references/contraintes-non-jouables.md`, traité à l'étape 11.
 
 ---
 
-## Permissions : lecture et écriture
+## Permissions : l'absence du point d'entrée
 
-**Règle** — pour chaque action réservée à un rôle, vérifier **l'absence du point d'entrée** (bouton, lien, champ) *et* **le refus de la soumission** par un rôle non autorisé.
+**Règle** — pour chaque action réservée à un rôle, un scénario vérifie que le point d'entrée (bouton, lien, champ) **n'apparaît pas** pour le rôle non autorisé, dans tous les écrans concernés.
 
-**Pourquoi** — un `Accès refusé` sur une page ne prouve rien sur la protection de l'action correspondante. Une interface qui cache le bouton tout en acceptant la soumission est une escalade de privilèges classique, invisible si on ne teste que la navigation.
+**Pourquoi** — c'est la moitié jouable en recette, et elle est souvent bâclée : vérifier qu'un lien de menu est absent ne dit rien de l'absence d'un bouton dans une liste ou d'un champ dans un formulaire. Passer les écrans un par un.
 
-**Découpage par exécutant** :
-- **Absence du point d'entrée** → scénario de recette normal : se connecter avec le rôle restreint, vérifier que le bouton, le lien ou le champ n'apparaît pas dans les écrans concernés.
-- **Refus de la soumission** → généralement pas jouable par un CDP. Deux exceptions à tenter d'abord : le formulaire laissé ouvert dans un onglet puis soumis après changement de compte, et le lien d'action copié depuis la session d'un rôle autorisé. Si aucune ne marche, la contrainte passe à l'étape 11 — c'est typiquement le cas où un test de policy existe déjà côté repo, et où le vérifier vaut mieux que de faire jouer une requête manuelle au CDP.
-
----
-
-## Contraintes non jouables en recette manuelle
-
-Référence de l'étape 11. Concerne les contraintes réelles qu'un CDP ne peut pas exercer depuis l'interface : basculer un feature flag, rendre un service externe injoignable, interrompre un traitement de fond, soumettre une action depuis un rôle non autorisé.
-
-**Pourquoi les sortir du fichier de recette** — un scénario que personne ne jouera dans la session alourdit la lecture, et son résultat attendu ne sera jamais coché. Le fichier de recette doit décrire ce qui va effectivement être fait. Mais supprimer la contrainte serait pire : elle disparaîtrait du radar alors que c'est souvent la plus risquée.
-
-### 1. Mesurer la couverture automatisée
-
-Chercher dans les tests du repo si la contrainte est déjà vérifiée : tests de policy pour les permissions, tests de requête pour les routes protégées, tests de job pour les traitements de fond, tests dédiés pour les feature flags.
-
-C'est **le seul endroit de la skill où les tests du repo sont lus**, et pour un usage précis : mesurer une couverture existante. Jamais pour déduire ce que la feature est censée faire — cette interdiction (étape 3) reste entière.
-
-### 2. Restituer honnêtement
-
-Une table dédiée dans le livrable, une ligne par contrainte : la contrainte, le verdict de couverture, la suite à donner. Et une ligne correspondante au tableau de couverture, en `✗`, puisque aucun résultat attendu du fichier ne l'assère.
-
-- **Couverte par un test automatisé** → rien à jouer manuellement, référence du test en annexe technique. C'est une bonne nouvelle, elle doit être visible : sans ça, le CDP croit à un trou.
-- **Non couverte** → trou réel, ni en recette ni en test. À signaler au CDP dans le message de remise : c'est souvent la demande la plus utile à porter à l'équipe, surtout quand la contrainte correspond à une erreur déjà vue en monitoring.
-
-### 3. Proposer les scénarios détaillés, ne pas les imposer
-
-Après avoir remis le fichier de recette, demander au CDP s'il veut en plus des scénarios détaillés pour ces contraintes, à jouer avec un développeur. S'il accepte : fichier séparé `scenarios-{slug-feature}-dev.md`, un scénario par contrainte, avec pour chacun **ce qu'il faut obtenir de l'équipe** (interrupteur d'activation, moyen de couper le service, accès pour rejouer une soumission).
-
-Ne jamais les intégrer au fichier principal, même en fin de document : ils ne seront pas joués dans la même session.
+**L'autre moitié** — le refus de la soumission par un rôle non autorisé n'est en général pas jouable par un CDP : voir `references/contraintes-non-jouables.md`, lu à l'étape 11.
 
 ---
 
@@ -304,16 +275,6 @@ Ne jamais les intégrer au fichier principal, même en fin de document : ils ne 
 **Une seule forme, jamais les deux.** Un fichier qui contient à la fois un scénario titré "Régression" et une mention "feature entièrement nouvelle, pas de régression" se contredit — le lecteur ne sait plus si le scénario doit être joué. Et un scénario qui teste l'intégration entre deux parties nouvelles est un **scénario d'intégration**, à renommer.
 
 **Si aucune surface partagée n'est touchée** — le dire en citant la revue ("aucune régression : la feature n'ajoute ni redirection, ni bloc sur un écran existant, ni email sur un déclencheur existant") plutôt qu'en affirmant "feature entièrement nouvelle". La première formulation se vérifie, la seconde non.
-
----
-
-## Scénario feature flag désactivé
-
-**Règle** — si la feature est conditionnée par un feature flag, inclure un scénario qui vérifie le comportement flag OFF : 404 ou redirection sur toutes les URLs concernées, jamais une 500.
-
-**Pourquoi** — au même titre que le responsive, ce n'est pas un cas optionnel à inclure "si le temps le permet" : c'est l'état dans lequel la feature part en prod avant activation.
-
-**Si pas de flag** — l'indiquer explicitement.
 
 ---
 
