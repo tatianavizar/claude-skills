@@ -17,6 +17,7 @@ Le **code applicatif** fait foi pour "ce qui existe réellement". Le **brief + l
 |---|---|
 | `references/regles-redaction.md` | **Obligatoire** avant l'étape 7 — règles de rédaction détaillées et leurs pièges |
 | `assets/template-scenarios.md` | **Obligatoire** avant l'étape 7 — structure du fichier de sortie |
+| `references/checklist.md` | **Obligatoire** à l'étape 11 — vérification avant livraison |
 | `assets/exemple-scenarios.md` | Avant l'étape 7 si le niveau de granularité attendu n'est pas clair |
 
 ## Inputs requis
@@ -107,26 +108,12 @@ Une ligne par contrainte technique ou fonctionnelle relevée en étapes 2 à 4. 
 
 Une ligne ✓ assortie d'une réserve ("à vérifier", "non testé explicitement") **est un ✗**. Formes que prend le défaut : voir `references/regles-redaction.md`.
 
+### 11. Vérification avant livraison
+
+**Lire `references/checklist.md` et la parcourir intégralement avant de remettre le fichier.** Ne pas la reconstituer de mémoire : chaque item correspond à un défaut déjà constaté sur une sortie réelle.
+
+Tout item non satisfait se corrige avant livraison. Un item qu'on choisit sciemment de ne pas satisfaire est signalé au CDP dans le message de remise, pas laissé silencieux dans le fichier.
+
 ## Format de sortie
 
 Un fichier Markdown par feature : `scenarios-{slug-feature}.md`, structuré selon `assets/template-scenarios.md`.
-
-## Checklist avant de livrer
-
-- [ ] **Reprendre les règles de l'étape 7 une par une** et vérifier chaque scénario contre chacune — vérification principale, ne pas la survoler
-- [ ] **Traçabilité du tableau : pour chaque ligne ✓, retrouver le résultat attendu numéroté qui l'assère.** Aucun résultat correspondant → compléter le scénario ou passer la ligne en ✗. Toute ligne ✓ portant une réserve devient ✗
-- [ ] Chaque résultat attendu énonce un état observable, aucun ne reformule son étape
-- [ ] Aucun résultat groupé sur plusieurs étapes
-- [ ] Table "Données de test à préparer" : toutes les entités citées en pré-conditions y figurent (comptes, projets, enveloppes, réseaux), colonnes **Muté par** et **Préparation** renseignées
-- [ ] **Chasse aux données de test superflues** : pour chaque entrée mono-scénario, classer la mutation (nulle / additive / réversible / destructive). Seule une mutation destructive justifie une entrée dédiée — sinon fusionner. Supprimer toute entrée citée dans aucune pré-condition
-- [ ] Balayage transverse : chaque entité mutée de façon destructive est absente de **tous** les autres scénarios, y compris non adjacents
-- [ ] Aucun nom de classe, méthode, attribut, exception, job ou token CSS dans le corps du fichier — uniquement dans l'annexe technique
-- [ ] Aucun conditionnel dans les étapes ("si ce mécanisme est exposé")
-- [ ] Champ **Exécutable par** renseigné sur chaque scénario, et tous les `avec un dev` regroupés dans leur section avec ce qu'il faut obtenir de l'équipe
-- [ ] Couverture : nominal, cas limites, résilience — les trois présents, dont au moins un cas de défaillance asynchrone/infra si la feature en contient
-- [ ] Permissions : chaque action réservée à un rôle est testée en absence de point d'entrée (corps de la recette) **et** en refus de soumission (corps si jouable, sinon section dev)
-- [ ] Régression : soit un scénario, soit une mention d'absence — pas les deux
-- [ ] Mode indiqué (standard / dégradé), avec avertissement en tête si dégradé
-- [ ] Monitoring tracé explicitement, même si rien n'a été trouvé
-- [ ] Version du brief et ticket(s) référencés dans le contexte
-- [ ] Tableau de couverture : une ligne par contrainte des étapes 2 à 4, chacune vérifiable sans lire le code

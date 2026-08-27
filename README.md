@@ -33,7 +33,7 @@ Chaque skill suit la même structure :
 ```
 <nom-de-la-skill>/
   SKILL.md              # frontmatter + workflow — chargé à chaque déclenchement, à garder court
-  references/*.md       # détail et rationale des règles — lus à la demande
+  references/*.md       # règles détaillées, checklist de livraison — lus à l'étape qui les concerne
   assets/*.md           # template de sortie + exemple conforme
 ```
 
