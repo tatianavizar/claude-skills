@@ -6,7 +6,7 @@ Les items sont classés par gravité : les trois premiers sont ceux qui produise
 
 ## Fiabilité des vérifications
 
-- [ ] **Reprendre les règles de l'étape 7 une par une** et vérifier chaque scénario contre chacune — vérification principale, ne pas la survoler
+- [ ] **Reprendre les 14 règles** (table en tête de `references/regles-redaction.md`) une par une et vérifier chaque scénario contre chacune — vérification principale, ne pas la survoler
 - [ ] **Traçabilité du tableau : pour chaque ligne ✓, retrouver le résultat attendu numéroté qui l'assère.** Aucun résultat correspondant, ou résultat portant sur autre chose → compléter le scénario, ou passer la ligne en ✗ avec renvoi en point de vigilance. Toute ligne ✓ portant une réserve ("à vérifier", "non testé explicitement") devient ✗
 - [ ] Chaque résultat attendu énonce un état observable après l'action, aucun ne reformule son étape
 - [ ] Aucun résultat groupé sur plusieurs étapes ("1–5. chaque adresse renvoie...")

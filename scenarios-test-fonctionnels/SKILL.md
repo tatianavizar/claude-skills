@@ -76,31 +76,11 @@ Réponse partielle : traiter les points répondus, et basculer les points resté
 
 ### 7. Rédiger les scénarios
 
-**Lire `references/regles-redaction.md` et `assets/template-scenarios.md` avant de commencer.** Lire aussi `assets/exemple-scenarios.md` en cas de doute sur la granularité.
+**Ne pas commencer à rédiger avant d'avoir lu `references/regles-redaction.md` et `assets/template-scenarios.md`.** Le premier porte les 14 règles de rédaction, la couverture exigée et le volume à viser ; le second la structure du livrable. Ces règles ne sont pas devinables : chacune vient d'un défaut constaté sur une sortie réelle, et plusieurs vont à l'encontre du réflexe naturel — notamment sur la réutilisation des données de test et sur la régression.
 
-Règles (détail et pièges dans `references/regles-redaction.md`) :
-- Chaque scénario est **exécutable seul**, sans dépendre de l'état laissé par un autre.
-- **Données de test : réutiliser par défaut, dupliquer par exception.** Entrée dédiée seulement si la mutation est **destructive** (archivage définitif, suppression, changement de rattachement, statut irréversible). Mutation nulle (consultation, **soumission refusée**), additive ou réversible → réutiliser. Réutiliser le sujet coûteux (compte, KYC), dupliquer l'objet bon marché (projet, montant).
-- **Pré-conditions explicites** : rôle et ses conditions précises, feature flags, état des données. Aucun conditionnel dans les étapes ("si ce mécanisme est exposé") — l'incertitude part en question ou en point de vigilance, le livrable affirme.
-- **Le livrable ne cite jamais de code** : ni classe, ni méthode, ni attribut, ni exception, ni job, ni token CSS. Les références techniques vont en annexe pour l'équipe back, traduites en effet observable dans le corps.
-- **Noms des données de test lisibles** : "Investisseur A", "Collaborateur B", "Projet A" — jamais d'identifiant technique en kebab-case entre accents graves. La table des données de test fait le lien entre le nom et l'état à préparer.
-- **Tout scénario du fichier est jouable par un CDP** — il dispose du BO et de l'application. Une contrainte qui demanderait autre chose (basculer un flag, couper un service, tuer un traitement, soumettre depuis un rôle non autorisé) ne devient pas un scénario ici : elle est traitée à l'étape 11.
-- **Ordre = logique métier du parcours**, jamais la criticité.
-- **Criticité dans le titre** entre parenthèses : `Critique` / `Majeure` / `Mineure`.
-- **Étapes et résultats attendus en deux listes numérotées parallèles**, une entrée de résultat par étape — jamais de résultat groupé ("1–5. chaque URL renvoie 404").
-- **Un résultat attendu n'est jamais la reformulation de son étape** : il énonce un état observable après l'action, pas l'action elle-même.
-- **Mutualiser les parcours** : le moins de scénarios possible sans perdre de couverture.
-- **Scénario de régression** : avant de conclure "feature entièrement nouvelle", passer en revue les **surfaces partagées** que la feature touche — redirection après connexion, tableau de bord existant, navigation commune, tunnel de paiement, emails déjà envoyés, listes déjà filtrées. Une feature qui greffe un espace sur une application existante en modifie presque toujours une. Le scénario de régression vérifie que le parcours pré-existant, **déclenché sans passer par la nouvelle feature**, fonctionne à l'identique. Conclure à l'absence de régression seulement après avoir listé ces surfaces et constaté qu'aucune n'est touchée — et le dire, jamais les deux formes à la fois.
-- **Responsive mutualisé** dans les scénarios existants, jamais dans un scénario dédié.
+Lire aussi `assets/exemple-scenarios.md` en cas de doute sur la granularité.
 
-Couverture attendue : chemin nominal, cas limites (données vides/max, doublons, valeurs invalides, actions concurrentes, permissions insuffisantes), résilience, responsive si la feature touche le FO (mobile + desktop minimum).
-
-Trois exigences non négociables, détaillées dans `references/regles-redaction.md` :
-- **Résilience** : au moins un scénario de défaillance jouable en recette (quota atteint, échec silencieux, données incohérentes) + un par erreur de l'étape 4 reproductible. Les défaillances qui demandent de couper un service ou de tuer un traitement passent à l'étape 11.
-- **Permissions** : pour chaque action réservée à un rôle, vérifier ici **l'absence du point d'entrée** (bouton, lien, champ) pour le rôle non autorisé. Le refus de la soumission passe à l'étape 11.
-- **Feature flag** : si la feature est derrière un flag, le comportement flag désactivé passe à l'étape 11 — le basculer demande presque toujours un dev.
-
-Volume indicatif pour calibrer : **6 à 12 scénarios** pour une feature de taille moyenne (un parcours, 2-3 rôles). Sortir de cette fourchette est légitime, mais au-delà de ~15 vérifier d'abord qu'il n'y a pas un découpage à mutualiser.
+Produire ensuite le fichier selon le template : contexte, erreurs de monitoring, données de test, scénarios, points de vigilance, tableau de couverture, contraintes non jouables, annexe technique.
 
 ### 8. Round 2 — questions (max 5, seulement si nécessaire)
 Uniquement si la rédaction a fait émerger de **nouvelles** divergences non documentées. Mêmes règles que le round 1.

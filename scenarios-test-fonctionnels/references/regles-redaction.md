@@ -1,6 +1,41 @@
 # Règles de rédaction — détail et pièges
 
-Référence de l'étape 7 de `SKILL.md`. Chaque section reprend une règle, son *pourquoi*, et le piège concret qui la rend nécessaire.
+Référence des étapes 7 et 11 de `SKILL.md`. Chaque section reprend une règle, son *pourquoi*, et le piège concret qui la rend nécessaire.
+
+## Les 14 règles
+
+À vérifier une par une sur chaque scénario. Les trois premières sont celles qu'on enfreint sans s'en apercevoir.
+
+| Règle | Section |
+|---|---|
+| 1. Chaque scénario est **exécutable seul**, sans dépendre de l'état laissé par un autre | [Indépendance](#indépendance-des-scénarios) |
+| 2. **Données de test : réutiliser par défaut**, entrée dédiée seulement si la mutation est destructive | [Données de test](#données-de-test--réutiliser-par-défaut-dupliquer-par-exception) |
+| 3. **Un résultat attendu n'est jamais la reformulation de son étape** | [Résultat ≠ étape](#un-résultat-attendu-nest-pas-une-reformulation-de-son-étape) |
+| 4. **Noms lisibles** ("Investisseur A"), aucun identifiant technique | [Nommer](#nommer-les-données-de-test) |
+| 5. **Pré-conditions explicites**, aucun conditionnel dans les étapes | [Pré-conditions](#pré-conditions) · [Conditionnels](#aucun-conditionnel-dans-les-étapes) |
+| 6. **Le livrable ne cite jamais de code** — références techniques en annexe | [Vocabulaire](#vocabulaire--le-livrable-ne-cite-jamais-de-code) |
+| 7. **Tout scénario est jouable par un CDP** (il a le BO et l'application) ; le reste part à l'étape 11 | [Contraintes non jouables](#contraintes-non-jouables-en-recette-manuelle) |
+| 8. **Ordre = logique métier**, jamais la criticité | [Ordre](#ordre-des-scénarios) |
+| 9. **Criticité dans le titre** : `Critique` / `Majeure` / `Mineure` | [Criticité](#criticité) |
+| 10. **Deux listes numérotées parallèles**, une entrée de résultat par étape | [Étapes et résultats](#étapes-et-résultats-attendus) |
+| 11. **Mutualiser les parcours** : le moins de scénarios possible sans perdre de couverture | [Mutualisation](#mutualisation-des-parcours) |
+| 12. **Régression** : revue des surfaces partagées avant de conclure quoi que ce soit | [Régression](#scénario-de-régression) |
+| 13. **Responsive mutualisé** dans les scénarios existants, jamais dédié | [Responsive](#responsive) |
+| 14. **Traçabilité** : chaque ligne ✓ du tableau renvoie à un résultat attendu qui l'assère | [Traçabilité](#traçabilité-entre-scénarios-et-tableau-de-couverture) |
+
+## Couverture exigée
+
+Chemin nominal · cas limites (données vides ou maximales, doublons, valeurs invalides, actions concurrentes, permissions insuffisantes) · résilience · responsive si la feature touche le front (mobile + desktop au minimum).
+
+Trois exigences non négociables :
+
+- **Résilience** — au moins un scénario de défaillance jouable en recette (quota atteint, échec silencieux, données incohérentes), plus un par erreur de monitoring reproductible. Couper un service ou tuer un traitement → étape 11.
+- **Permissions** — pour chaque action réservée à un rôle, vérifier ici **l'absence du point d'entrée** (bouton, lien, champ). Le refus de la soumission → étape 11.
+- **Feature flag** — si la feature est derrière un flag, le comportement flag désactivé → étape 11 : le basculer demande presque toujours un dev.
+
+## Volume
+
+**6 à 12 scénarios** pour une feature de taille moyenne (un parcours, 2-3 rôles). Sortir de cette fourchette est légitime, mais au-delà de ~15, chercher d'abord un découpage à mutualiser.
 
 ---
 
