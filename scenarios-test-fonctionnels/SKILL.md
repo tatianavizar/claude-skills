@@ -55,6 +55,8 @@ Si un monitoring est accessible, chercher les erreurs récentes liées à la fea
 
 **Toujours tracer le résultat dans le contexte du fichier de sortie**, y compris quand rien n'est trouvé ("Monitoring vérifié : aucune erreur récente" / "Monitoring non accessible").
 
+Tracer l'**effet observable**, pas la trace technique : "l'ouverture du détail d'une enveloppe a échoué une fois le 18/08" et non le nom du contrôleur et de l'exception. Les références techniques vont dans l'annexe destinée à l'équipe back.
+
 ### 5. Détecter les divergences non documentées
 Lister ce qui diverge entre attendu (étape 2) et réel (étape 3) sans avoir été tranché quelque part (brief, ticket, commentaire). Écart mineur et non ambigu → note de vigilance. Écart qui change le comportement testable → question de contexte.
 
@@ -69,8 +71,10 @@ Réponse partielle : traiter les points répondus, et basculer les points resté
 
 Règles (détail et pièges dans `references/regles-redaction.md`) :
 - Chaque scénario est **exécutable seul**, sans dépendre de l'état laissé par un autre.
-- Une entité **mutée** par un scénario = une fixture dédiée à ce scénario, sur tout le fichier.
-- **Pré-conditions explicites** : rôle et ses conditions précises, feature flags, état des données.
+- **Données de test : réutiliser par défaut, dupliquer par exception.** Entrée dédiée seulement si la mutation est **destructive** (archivage définitif, suppression, changement de rattachement, statut irréversible). Mutation nulle (consultation, **soumission refusée**), additive ou réversible → réutiliser. Réutiliser le sujet coûteux (compte, KYC), dupliquer l'objet bon marché (projet, montant).
+- **Pré-conditions explicites** : rôle et ses conditions précises, feature flags, état des données. Aucun conditionnel dans les étapes ("si ce mécanisme est exposé") — l'incertitude part en question ou en point de vigilance, le livrable affirme.
+- **Le livrable ne cite jamais de code** : ni classe, ni méthode, ni attribut, ni exception, ni job, ni token CSS. Les références techniques vont en annexe pour l'équipe back, traduites en effet observable dans le corps.
+- **Champ `Exécutable par` sur chaque scénario** : `PM seul` / `PM + accès BO` / `avec un dev`. Tout scénario `avec un dev` sort du corps de la recette et va dans la section dédiée.
 - **Ordre = logique métier du parcours**, jamais la criticité.
 - **Criticité dans le titre** entre parenthèses : `Critique` / `Majeure` / `Mineure`.
 - **Étapes et résultats attendus en deux listes numérotées parallèles**, une entrée de résultat par étape — jamais de résultat groupé ("1–5. chaque URL renvoie 404").
@@ -111,8 +115,12 @@ Un fichier Markdown par feature : `scenarios-{slug-feature}.md`, structuré selo
 - [ ] **Traçabilité du tableau : pour chaque ligne ✓, retrouver le résultat attendu numéroté qui l'assère.** Aucun résultat correspondant → compléter le scénario ou passer la ligne en ✗. Toute ligne ✓ portant une réserve devient ✗
 - [ ] Chaque résultat attendu énonce un état observable, aucun ne reformule son étape
 - [ ] Aucun résultat groupé sur plusieurs étapes
-- [ ] Table "Données de test à préparer" : toutes les entités citées en pré-conditions y figurent (rôles, projets, enveloppes, réseaux), et la colonne **Muté par** est renseignée pour chacune
-- [ ] Balayage transverse des fixtures : chaque entité mutée est absente de **tous** les autres scénarios, y compris non adjacents. Une entité dont la colonne Muté par cite deux scénarios est un défaut, pas une optimisation
+- [ ] Table "Données de test à préparer" : toutes les entités citées en pré-conditions y figurent (comptes, projets, enveloppes, réseaux), colonnes **Muté par** et **Préparation** renseignées
+- [ ] **Chasse aux données de test superflues** : pour chaque entrée mono-scénario, classer la mutation (nulle / additive / réversible / destructive). Seule une mutation destructive justifie une entrée dédiée — sinon fusionner. Supprimer toute entrée citée dans aucune pré-condition
+- [ ] Balayage transverse : chaque entité mutée de façon destructive est absente de **tous** les autres scénarios, y compris non adjacents
+- [ ] Aucun nom de classe, méthode, attribut, exception, job ou token CSS dans le corps du fichier — uniquement dans l'annexe technique
+- [ ] Aucun conditionnel dans les étapes ("si ce mécanisme est exposé")
+- [ ] Champ **Exécutable par** renseigné sur chaque scénario, et tous les `avec un dev` regroupés dans leur section avec ce qu'il faut obtenir de l'équipe
 - [ ] Couverture : nominal, cas limites, résilience — les trois présents, dont au moins un cas de défaillance asynchrone/infra si la feature en contient
 - [ ] Permissions : chaque action réservée à un rôle est testée en absence de point d'entrée **et** en refus d'écriture
 - [ ] Régression : soit un scénario, soit une mention d'absence — pas les deux

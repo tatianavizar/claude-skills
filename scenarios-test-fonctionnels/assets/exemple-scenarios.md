@@ -1,151 +1,174 @@
 # Exemple de sortie conforme
 
-Exemple complet de fichier généré par cette skill, à consulter en cas de doute sur la granularité attendue. Feature fictive mais réaliste : gestion multi-wallets sur une plateforme de financement participatif (BO admin + FO investisseur, PSP externe).
+Exemple complet de fichier généré par cette skill, à consulter en cas de doute sur la granularité attendue. Feature fictive mais réaliste : gestion multi-wallets sur une plateforme de financement participatif (BO admin + FO investisseur, prestataire de paiement externe).
 
-Ce que l'exemple illustre : une fixture dédiée par entité mutée avec la colonne `Muté par` renseignée (aucun scénario ne dépend de l'état laissé par un autre), criticité dans les titres, listes parallèles étapes/résultats où chaque résultat énonce un état observable et non l'action, ordre métier, mutualisation d'actions enchaînées par un même rôle (scénario 3 : paiement puis annulation), responsive intégré dans des scénarios existants, résilience infra (scénario 5 : timeout PSP), régression et feature flag traités.
+Ce que l'exemple illustre :
 
-Vérifier surtout la **traçabilité du tableau de couverture** : chaque ligne ✓ renvoie à un scénario dont un résultat attendu numéroté assère littéralement la contrainte, et la seule contrainte non couverte est marquée ✗ avec renvoi en point de vigilance.
+- **8 entrées de données de test pour 5 scénarios**, pas une par scénario. Un seul porteur sert trois scénarios parce que ses mutations sont additives ; un seul projet reçoit deux souscriptions.
+- Les deux seules entrées dédiées correspondent aux deux mutations destructives du fichier (un archivage définitif).
+- **Champ `Exécutable par`** sur chaque scénario, et les deux scénarios qui demandent un développeur isolés dans leur section.
+- **Aucun nom de classe, d'exception ou de job dans le corps** — tout est en annexe technique.
+- Criticité dans les titres, listes parallèles où chaque résultat énonce un état observable, ordre métier, mutualisation (le scénario 1 enchaîne trois actions du même rôle), responsive intégré aux scénarios existants.
+- **Traçabilité du tableau de couverture** : chaque ligne ✓ renvoie à un résultat attendu numéroté qui assère la contrainte ; la seule contrainte non couverte est ✗ avec renvoi en point de vigilance.
 
 ---
 
 # Scénarios de test — Multi-wallets par projet
 
 ## Contexte
-- Feature : un wallet PSP distinct par projet publié (au lieu d'un wallet unique par porteur), + wallet séquestre par souscription d'investisseur non averti
+- Feature : un wallet distinct par projet publié (au lieu d'un wallet unique par porteur), + wallet séquestre par souscription d'investisseur non averti
 - Brief utilisé (version initiale / éditée) : brief "Multi-wallets" — version éditée du 12/06, section "Réutilisation du wallet par défaut" ajoutée après le round 1
 - Ticket(s) : CAPS-1428, CAPS-1431
 - Repo / commit : `app-plateforme` @ `a3f19c2`
 - Mode : Standard (brief + code)
-- Monitoring : vérifié, 2 erreurs `Psp::TimeoutError` sur la création de wallet dans les 30 derniers jours → couvertes par le scénario 5
+- Monitoring : vérifié — la création du wallet d'un projet a échoué 2 fois en 30 jours par absence de réponse du prestataire de paiement (voir scénario D1 et annexe technique)
 
 ## Données de test à préparer
 
-Toutes les entités citées en pré-conditions figurent ici : rôles, mais aussi projets, enveloppes, réseaux, comptes externes. `Muté par` = le scénario unique qui modifie l'état de l'entité, ou `—` si l'entité est en lecture seule sur tout le fichier.
+- `Muté par` : le scénario qui modifie l'état de façon **destructive**. `—` sinon ; les mutations additives sont indiquées dans le détail.
+- `Préparation` : `existant en staging` | `BO` | `seed dev`.
 
-| Identifiant | Rôle / état | Muté par | Détail |
-|---|---|---|---|
-| `admin-recette` | Admin BO | — | droits complets, aucun état propre modifié par les scénarios |
-| `porteur-sans-projet` | Porteur de projet | sc1 | onboarding PSP complété, **aucun** projet publié ; gagne un projet en sc1 |
-| `porteur-un-projet` | Porteur de projet | sc2 | onboarding complété, **exactement un** projet publié, pas d'IBAN ; gagne un projet et un IBAN en sc2 |
-| `porteur-iban` | Porteur de projet | — | IBAN virtuel **déjà généré**, consulté en lecture seule en sc2 |
-| `porteur-archive` | Porteur de projet | sc4 | 1 projet publié ; le projet est archivé en sc4 (irréversible) |
-| `porteur-timeout` | Porteur de projet | sc5 | onboarding complété, projet prêt à publier ; publication en échec puis rattrapée en sc5 |
-| `investisseur-nonaverti` | Investisseur FO | sc3 | KYC validé, statut **non averti**, solde suffisant ; souscrit puis annule en sc3 |
-| `investisseur-sansko` | Investisseur FO | — | KYC **non validé** ; sa tentative de souscription en sc5 est refusée, aucun état créé |
-| `investisseur-averti` | Investisseur FO | sc6 | KYC validé, statut **averti**, solde suffisant ; souscrit en sc6 |
-| `projet-souscription-A` | Projet publié | sc3 | collecte ouverte ; reçoit la souscription de sc3 (la tentative refusée de sc5 ne le modifie pas) |
-| `projet-souscription-B` | Projet publié | sc6 | collecte ouverte ; reçoit la souscription de sc6 |
-| `projet-flag-off` | Projet publié + 1 souscription payée | — | consulté en lecture seule en sc7 |
+| Identifiant | Rôle / état | Muté par | Préparation | Détail |
+|---|---|---|---|---|
+| `admin-recette` | Admin BO | — | existant | droits complets, aucun état propre modifié |
+| `porteur-actif` | Porteur de projet | — | BO | onboarding paiement complété, **aucun** projet publié, pas d'IBAN virtuel. Gagne des projets et un IBAN en sc1, une tentative de publication en D1 — additif, aucun scénario n'assère un décompte de projets |
+| `porteur-iban` | Porteur de projet | — | existant | IBAN virtuel **déjà généré** — consulté en lecture seule en sc1 |
+| `porteur-archive` | Porteur de projet | sc3 | BO | 1 projet publié, archivé définitivement en sc3 |
+| `investisseur-nonaverti` | Investisseur FO | — | existant | KYC validé, statut **non averti**, solde suffisant. Souscrit puis annule en sc2 |
+| `investisseur-averti` | Investisseur FO | — | existant | KYC validé, statut **averti**, solde suffisant. Souscrit en sc5 |
+| `investisseur-sanskyc` | Investisseur FO | — | BO | KYC **non validé**. Sa tentative de souscription en sc4 est refusée : aucun état créé, réutilisable indéfiniment |
+| `projet-collecte` | Projet publié | — | BO | collecte ouverte. Reçoit la souscription de sc2 puis celle de sc5, et la tentative refusée de sc4 — additif |
+
+*`porteur-actif` et `projet-collecte` remplacent chacun trois entrées d'une première version de ce fichier : gagner un projet ou une souscription est additif, donc aucune duplication n'était nécessaire.*
 
 ## Scénarios
 
-### Scénario 1 — Premier projet d'un porteur : réutilisation du wallet par défaut (Majeure)
-- **Rôle / device** : `admin-recette`, desktop
-- **Pré-conditions** : `porteur-sans-projet`, onboarding PSP complété, aucun projet publié ; flag `multi_wallets` actif
+*Tous les scénarios de cette section sont jouables sans intervention d'un développeur.*
+
+### Scénario 1 — Wallets par projet et IBAN virtuel du porteur (Majeure)
+- **Rôle / device** : `admin-recette`, desktop puis **mobile** à l'étape 7
+- **Exécutable par** : PM + accès BO
+- **Pré-conditions** : `porteur-actif` sans projet publié et sans IBAN virtuel ; `porteur-iban` disponible en lecture ; multi-wallets actif sur l'environnement
 - **Étapes** :
-  1. Ouvrir la fiche de `porteur-sans-projet` et noter l'identifiant de son wallet par défaut (section PSP)
-  2. Créer et publier un premier projet pour ce porteur
-  3. Ouvrir la fiche du projet, section wallets PSP
+  1. Ouvrir la fiche de `porteur-actif` et noter l'identifiant de son wallet par défaut
+  2. Créer et publier un premier projet pour ce porteur, puis ouvrir la fiche du projet
+  3. Créer et publier un second projet pour le même porteur, puis noter l'identifiant de son wallet de collecte
+  4. Comparer les identifiants de collecte des deux projets
+  5. Depuis la fiche de `porteur-actif`, cliquer sur "Générer l'IBAN virtuel"
+  6. Ouvrir la fiche de `porteur-iban`
+  7. Rouvrir la fiche de `porteur-actif` sur mobile (viewport 375 px)
 - **Résultats attendus** :
   1. Un identifiant de wallet par défaut est affiché, avec son solde en euros
-  2. La publication aboutit sans message d'erreur
-  3. Deux blocs sont présents — "Wallet projet (collecte)" et "Wallet porteur (remboursements)" — et l'identifiant du bloc collecte est **identique** à celui noté à l'étape 1 : aucun nouveau wallet créé côté PSP
+  2. Deux blocs sont présents — "Wallet projet (collecte)" et "Wallet porteur (remboursements)" — et l'identifiant du bloc collecte est **identique** à celui noté à l'étape 1 : le wallet existant a été réutilisé
+  3. La publication aboutit sans message d'erreur et un identifiant de wallet est affiché
+  4. Les deux identifiants sont **différents** : un wallet dédié a été créé pour le second projet
+  5. Un message de confirmation s'affiche, l'IBAN virtuel et le BIC apparaissent sur la fiche, le bouton disparaît
+  6. Le bouton "Générer l'IBAN virtuel" est **absent** (un IBAN existe déjà), l'IBAN et le BIC sont affichés
+  7. La section paiement reste lisible : blocs empilés, identifiants et IBAN non tronqués, aucun débordement horizontal
 
-### Scénario 2 — Second projet et génération d'IBAN virtuel (Majeure)
-- **Rôle / device** : `admin-recette`, desktop puis **mobile** à l'étape 5
-- **Pré-conditions** : `porteur-un-projet` avec exactement un projet publié et sans IBAN virtuel ; `porteur-iban` disponible en lecture ; flag `multi_wallets` actif
-- **Étapes** :
-  1. Créer et publier un second projet pour `porteur-un-projet`, puis noter l'identifiant du bloc "Wallet projet (collecte)"
-  2. Comparer avec l'identifiant de collecte du projet déjà publié
-  3. Depuis la fiche de `porteur-un-projet`, cliquer sur "Générer l'IBAN virtuel"
-  4. Ouvrir la fiche de `porteur-iban`
-  5. Rouvrir la fiche de `porteur-un-projet` sur mobile (viewport 375 px)
-- **Résultats attendus** :
-  1. La publication aboutit et un identifiant de wallet est affiché
-  2. Les deux identifiants sont **différents** : un wallet dédié a été créé pour le second projet
-  3. Un message de confirmation s'affiche, l'IBAN virtuel et le BIC apparaissent sur la fiche, le bouton disparaît
-  4. Le bouton "Générer l'IBAN virtuel" est **absent** (IBAN déjà existant), l'IBAN et le BIC sont affichés
-  5. La section PSP reste lisible : blocs empilés, identifiants et IBAN non tronqués, aucun débordement horizontal
-
-### Scénario 3 — Souscription non avertie : séquestre puis restitution en rétractation (Critique)
+### Scénario 2 — Souscription non avertie : séquestre puis restitution en rétractation (Critique)
 - **Rôle / device** : `investisseur-nonaverti` (**mobile** à l'étape 1) puis `admin-recette`, desktop
-- **Pré-conditions** : `projet-souscription-A` publié, collecte ouverte ; `investisseur-nonaverti` KYC validé, statut non averti, solde suffisant ; enchaîner les étapes 1 à 4 **sans attendre l'expiration de la rétractation**
+- **Exécutable par** : PM + accès BO
+- **Pré-conditions** : `projet-collecte` en collecte ouverte ; `investisseur-nonaverti` KYC validé, statut non averti, solde suffisant ; enchaîner les étapes 1 à 4 **sans attendre l'expiration du délai de rétractation**
 - **Étapes** :
-  1. Depuis le FO mobile (375 px), souscrire et payer sur `projet-souscription-A`
-  2. En BO, ouvrir la fiche de cette souscription et dérouler jusqu'au bloc "Wallet escrow", puis cliquer sur "Effacer le cache"
+  1. Depuis le front mobile (375 px), souscrire et payer sur `projet-collecte`
+  2. En BO, ouvrir la fiche de cette souscription, dérouler jusqu'au bloc "Wallet séquestre", puis cliquer sur "Rafraîchir"
   3. Depuis l'espace investisseur, annuler la souscription
-  4. En BO, rouvrir la fiche de la souscription, bloc "Wallet escrow", puis "Effacer le cache"
+  4. En BO, rouvrir la fiche de la souscription, bloc "Wallet séquestre", puis "Rafraîchir"
 - **Résultats attendus** :
-  1. Le tunnel de souscription est utilisable sur mobile (champs et CTA accessibles sans zoom), le paiement est confirmé
-  2. Le bloc "Wallet escrow" est visible avec un identifiant de compte et un solde égal au montant investi ; le rafraîchissement recharge la même fiche sans redirection ni changement de montant
+  1. Le tunnel de souscription est utilisable sur mobile (champs et bouton accessibles sans zoom), le paiement est confirmé
+  2. Le bloc "Wallet séquestre" affiche un identifiant de compte et un solde égal au montant investi ; le rafraîchissement recharge la même fiche sans redirection ni changement de montant
   3. L'annulation aboutit sans erreur, la souscription passe au statut "Annulée"
-  4. Le solde du wallet escrow affiche **0 €**
+  4. Le solde du wallet séquestre affiche **0 €**
 
-### Scénario 4 — Archivage d'un projet : wallet conservé, collecte fermée (Critique)
+### Scénario 3 — Archivage d'un projet : wallet conservé, collecte fermée (Critique)
 - **Rôle / device** : `admin-recette`, desktop
-- **Pré-conditions** : `porteur-archive` avec un projet publié — fixture exclusive, le projet est muté de façon irréversible ; flag `multi_wallets` actif
+- **Exécutable par** : PM + accès BO
+- **Pré-conditions** : `porteur-archive` avec un projet publié — entrée dédiée, l'archivage est irréversible ; multi-wallets actif
 - **Étapes** :
   1. Ouvrir la fiche du projet de `porteur-archive` et noter l'identifiant du wallet de collecte
   2. Archiver le projet
   3. Rouvrir la fiche du projet archivé
-  4. Depuis le FO, accéder à l'URL publique de ce projet
+  4. Depuis le front, accéder à l'adresse publique de ce projet
 - **Résultats attendus** :
   1. L'identifiant du wallet de collecte est affiché
   2. L'archivage aboutit sans erreur, le statut passe à "Archivé"
-  3. Le bloc wallet est toujours présent avec le **même identifiant** (le wallet n'est pas supprimé) et la collecte est marquée fermée
-  4. La page renvoie un 404 ou une redirection vers la liste des projets, jamais une 500
+  3. Le bloc wallet est toujours présent avec le **même identifiant** — le wallet n'est pas supprimé — et la collecte est marquée fermée
+  4. La page affiche "projet introuvable" ou redirige vers la liste des projets, jamais une erreur serveur
 
-### Scénario 5 — Résilience : timeout PSP et KYC manquant (Majeure)
-- **Rôle / device** : `admin-recette` puis `investisseur-sansko`, desktop
-- **Pré-conditions** : `porteur-timeout` avec un projet prêt à publier ; moyen de simuler un timeout PSP en recette (coupure réseau ou sandbox indisponible) ; `investisseur-sansko` KYC non validé ; `projet-souscription-A` publié
+### Scénario 4 — KYC non validé : souscription refusée (Majeure)
+- **Rôle / device** : `investisseur-sanskyc`, desktop
+- **Exécutable par** : PM seul
+- **Pré-conditions** : `investisseur-sanskyc` avec KYC non validé ; `projet-collecte` en collecte ouverte
 - **Étapes** :
-  1. Publier le projet de `porteur-timeout` en simulant un timeout PSP au moment de la création du wallet
-  2. Rétablir le PSP, rouvrir la fiche du projet, puis "Effacer le cache"
-  3. Avec `investisseur-sansko`, tenter de souscrire sur `projet-souscription-A`
+  1. Depuis le front, ouvrir `projet-collecte` et lancer une souscription
+  2. En BO, ouvrir la fiche de `investisseur-sanskyc`
 - **Résultats attendus** :
-  1. Un message d'erreur explicite est affiché (pas de page 500, pas de succès silencieux) et le projet n'est pas laissé publié sans wallet
-  2. La fiche affiche soit le wallet correctement créé, soit une invitation claire à relancer l'opération — jamais un bloc vide sans explication
-  3. La souscription est refusée avec un message renvoyant vers la finalisation du KYC, aucun wallet séquestre n'est créé
+  1. La souscription est refusée avec un message renvoyant vers la finalisation du KYC ; aucun formulaire de paiement n'est proposé
+  2. Aucune souscription et aucun wallet séquestre ne sont rattachés au compte
 
-### Scénario 6 — Régression : souscription d'un investisseur averti (Critique)
+### Scénario 5 — Régression : souscription d'un investisseur averti (Critique)
 - **Rôle / device** : `investisseur-averti` puis `admin-recette`, desktop
-- **Pré-conditions** : `projet-souscription-B` publié, collecte ouverte ; `investisseur-averti` KYC validé, statut averti, solde suffisant ; flag `multi_wallets` actif
+- **Exécutable par** : PM + accès BO
+- **Pré-conditions** : `projet-collecte` en collecte ouverte ; `investisseur-averti` KYC validé, statut averti, solde suffisant ; multi-wallets actif
 - **Étapes** :
-  1. Souscrire et payer sur `projet-souscription-B`
+  1. Souscrire et payer sur `projet-collecte`
   2. En BO, ouvrir la fiche de la souscription
 - **Résultats attendus** :
-  1. Le paiement aboutit selon l'ancien parcours averti (aucune période de rétractation appliquée)
-  2. Les fonds apparaissent sur le wallet de collecte du projet et **aucun** bloc "Wallet escrow" n'est affiché — comportement inchangé par la feature
+  1. Le paiement aboutit selon le parcours averti existant, aucun délai de rétractation n'est appliqué
+  2. Les fonds apparaissent sur le wallet de collecte du projet et **aucun** bloc "Wallet séquestre" n'est affiché — comportement inchangé par la feature
 
-### Scénario 7 — Feature flag `multi_wallets` désactivé (Majeure)
-- **Rôle / device** : `admin-recette`, desktop
-- **Pré-conditions** : flag `multi_wallets` **désactivé** ; `projet-flag-off` publié avec une souscription payée
+## À faire avec un dev
+
+*Deux vérifications ne sont pas déclenchables depuis l'interface. Elles sont écrites ici pour rester visibles et devenir une demande d'outillage, pas pour être omises.*
+
+### D1 — Résilience : le prestataire de paiement ne répond pas à la création du wallet (Majeure)
+- **Exécutable par** : avec un dev
+- **Ce qu'il faut obtenir de l'équipe** : un moyen de rendre le prestataire injoignable sur l'environnement de recette (bac à sable coupé ou blocage réseau), et de le rétablir
+- **Pré-conditions** : `porteur-actif` avec un projet prêt à publier ; prestataire rendu injoignable
 - **Étapes** :
-  1. Ouvrir la fiche de `projet-flag-off`
+  1. Publier le projet pendant que le prestataire est injoignable
+  2. Rétablir le prestataire, rouvrir la fiche du projet, puis cliquer sur "Rafraîchir"
+- **Résultats attendus** :
+  1. Un message d'erreur explicite est affiché, aucune page d'erreur serveur, et le projet n'est pas laissé publié sans wallet
+  2. La fiche affiche soit le wallet correctement créé, soit une invitation claire à relancer l'opération — jamais un bloc vide sans explication
+
+### D2 — Multi-wallets désactivé (Majeure)
+- **Exécutable par** : avec un dev
+- **Ce qu'il faut obtenir de l'équipe** : un interrupteur d'activation dans le BO, ou la désactivation à la demande sur l'environnement de recette
+- **Pré-conditions** : multi-wallets **désactivé** ; un projet publié portant une souscription payée (`projet-collecte` après le scénario 5, ou tout projet équivalent existant en staging)
+- **Étapes** :
+  1. Ouvrir la fiche du projet
   2. Ouvrir la fiche de sa souscription payée
 - **Résultats attendus** :
-  1. Aucun bloc multi-wallets n'est affiché, la fiche s'affiche normalement (jamais de 500)
-  2. Aucun bloc "Wallet escrow", la fiche reste fonctionnelle
+  1. Aucun bloc multi-wallets n'est affiché, la fiche s'affiche normalement, aucune erreur serveur
+  2. Aucun bloc "Wallet séquestre", la fiche reste fonctionnelle
 
 ## Points de vigilance
-- Les 2 `Psp::TimeoutError` du monitoring proviennent d'une absence de retry sur la création de wallet — le scénario 5 vérifie le message d'erreur, pas la reprise automatique, qui n'existe pas côté code.
-- L'identifiant de compte PSP devrait être un lien vers le dashboard du prestataire (mentionné au brief) — non implémenté au commit audité, non testable.
-- La cohérence des soldes affichés dépend du cache : un écart transitoire après une opération PSP n'est pas un bug tant que "Effacer le cache" le résorbe.
-- Écart mineur brief ↔ code non remonté en question : le brief parle de "wallet de remboursement", le BO affiche "Wallet porteur (remboursements d'échéances)". Vocabulaire à aligner, sans impact fonctionnel.
+- La création du wallet d'un projet n'est pas relancée automatiquement quand le prestataire ne répond pas : le scénario D1 vérifie le message affiché, pas une reprise, qui n'existe pas.
+- L'identifiant de compte du prestataire devrait être un lien vers son tableau de bord (prévu au brief) — non implémenté sur la version auditée, non testable.
+- Les soldes affichés viennent d'un cache : un écart transitoire après une opération de paiement n'est pas un bug tant que le bouton "Rafraîchir" le résorbe.
+- Écart de vocabulaire brief ↔ interface, sans impact fonctionnel : le brief parle de "wallet de remboursement", le BO affiche "Wallet porteur (remboursements)".
 
 ## Tableau de couverture
 
-| Contrainte | Scénario(s) associé(s) | Case traitée (✓/✗) | Critère d'acceptation |
+| Contrainte | Scénario(s) | ✓/✗ | Critère d'acceptation |
 |---|---|---|---|
-| Le premier projet d'un porteur réutilise son wallet par défaut | 1 | ✓ | Identifiant du wallet de collecte identique à celui de la fiche porteur |
-| Chaque projet suivant obtient un wallet distinct | 2 | ✓ | Identifiants de collecte différents entre les deux projets du porteur |
-| L'IBAN virtuel n'est générable qu'une fois | 2 | ✓ | Bouton absent dès qu'un IBAN existe |
-| Un paiement d'investisseur non averti crée un wallet séquestre | 3 | ✓ | Bloc "Wallet escrow" présent, solde = montant investi |
-| L'annulation en rétractation restitue les fonds | 3 | ✓ | Solde escrow à 0 € après annulation |
-| L'archivage conserve le wallet et ferme la collecte | 4 | ✓ | Même identifiant après archivage, collecte fermée, URL publique en 404 |
-| Un timeout PSP ne laisse pas un projet publié sans wallet | 5 | ✓ | Message d'erreur explicite, aucun état incohérent en BO |
-| Un KYC non validé bloque la souscription | 5 | ✓ | Refus avec message KYC, aucun wallet séquestre créé |
-| Le parcours averti est inchangé | 6 | ✓ | Aucun bloc escrow, paiement direct sur le wallet de collecte |
-| Flag désactivé : aucune régression d'affichage | 7 | ✓ | Fiches projet et souscription fonctionnelles, aucun bloc multi-wallets, aucune 500 |
-| Sections PSP lisibles sur mobile | 2, 3 | ✓ | Aucun débordement horizontal à 375 px, identifiants non tronqués |
-| Retry automatique après timeout PSP | — | ✗ | Non implémenté au commit audité — voir points de vigilance |
+| Le premier projet d'un porteur réutilise son wallet par défaut | sc1 | ✓ | Identifiant du wallet de collecte identique à celui de la fiche porteur (résultat 2) |
+| Chaque projet suivant obtient un wallet distinct | sc1 | ✓ | Identifiants de collecte différents entre les deux projets (résultat 4) |
+| L'IBAN virtuel n'est générable qu'une fois | sc1 | ✓ | IBAN affiché et bouton disparu après génération (résultat 5), bouton absent quand un IBAN existe (résultat 6) |
+| Un paiement d'investisseur non averti crée un wallet séquestre | sc2 | ✓ | Bloc "Wallet séquestre" avec solde égal au montant investi (résultat 2) |
+| L'annulation pendant la rétractation restitue les fonds | sc2 | ✓ | Solde du wallet séquestre à 0 € (résultat 4) |
+| L'archivage conserve le wallet et ferme la collecte | sc3 | ✓ | Même identifiant de wallet après archivage, collecte fermée (résultat 3), adresse publique inaccessible (résultat 4) |
+| Un KYC non validé bloque la souscription | sc4 | ✓ | Refus avec message KYC (résultat 1), aucun wallet séquestre créé (résultat 2) |
+| Le parcours averti est inchangé | sc5 | ✓ | Aucun bloc séquestre, fonds sur le wallet de collecte (résultat 2) |
+| Une indisponibilité du prestataire ne laisse pas un projet publié sans wallet | D1 | ✓ | Message d'erreur explicite, aucun état incohérent en BO (résultat 1) |
+| Multi-wallets désactivé : aucune régression d'affichage | D2 | ✓ | Fiches projet et souscription fonctionnelles, aucun bloc, aucune erreur serveur (résultats 1 et 2) |
+| Sections paiement lisibles sur mobile | sc1, sc2 | ✓ | Aucun débordement horizontal à 375 px (sc1 résultat 7), tunnel utilisable sur mobile (sc2 résultat 1) |
+| Reprise automatique après indisponibilité du prestataire | — | ✗ | Non implémenté sur la version auditée — voir points de vigilance |
+
+## Annexe technique (équipe back)
+
+*Aucun de ces éléments n'apparaît dans le corps du fichier.*
+
+- Indisponibilité du prestataire (contexte, scénario D1, point de vigilance 1) : `Psp::TimeoutError` levée dans la création du wallet projet, 2 occurrences sur 30 jours, aucune relance configurée.
