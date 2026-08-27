@@ -34,7 +34,6 @@
 
 ### Scénario 1 — {Titre} ({Critique | Majeure | Mineure})
 - **Rôle / device** : {ex. investisseur KYC validé, mobile}
-- **Exécutable par** : {CDP seul | CDP + accès BO} — qualifie l'exécution des étapes, pas la préparation des données
 - **Pré-conditions** : {état des données, feature flags, conditions du rôle — aucun conditionnel}
 - **Étapes** :
   1. {Action}

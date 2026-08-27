@@ -40,7 +40,7 @@ Donc : **un seul investisseur actif qui souscrit sur trois projets différents**
 - **Données de test inutilisées** : toute entité déclarée dans la table mais citée dans aucune pré-condition est à supprimer. Elles s'accumulent quand la rédaction évolue et gonflent le coût de prep pour rien.
 - **Données de test mono-scénario** : chaque entité dont la colonne `Muté par` ne cite qu'un scénario doit passer le test de la classification ci-dessus. Si la mutation n'est pas destructive, fusionner avec une donnée de test existante.
 - **Colonne `Muté par`** : un seul scénario, ou `—` si l'entité n'est jamais mutée de façon destructive. Deux scénarios destructifs dans la case = défaut.
-- **Colonne `Préparation`** : `existant en staging` / `BO` / `seed dev`. Rend le coût visible avant de commencer et identifie ce qui bloque un CDP sans accès.
+- **Colonne `Préparation`** : `existant en staging` / `BO` / `à créer avant chaque run`. Rend le coût visible avant de commencer, et distingue ce qui est réutilisable d'un run à l'autre.
 - **Entités non-rôles** : projets, enveloppes, réseaux, comptes externes cités en pré-conditions doivent figurer dans la table. Une pré-condition qui référence un identifiant absent est une donnée de test que personne ne préparera.
 
 ### Pièges
@@ -166,7 +166,7 @@ Donc : **un seul investisseur actif qui souscrit sur trois projets différents**
 **Pourquoi** — un `Accès refusé` sur une page ne prouve rien sur la protection de l'action correspondante. Une interface qui cache le bouton tout en acceptant la soumission est une escalade de privilèges classique, invisible si on ne teste que la navigation.
 
 **Découpage par exécutant** :
-- **Absence du point d'entrée** → jouable par un CDP seul : se connecter avec le rôle restreint, vérifier que le bouton, le lien ou le champ n'apparaît pas dans les écrans concernés. À mettre dans le corps de la recette.
+- **Absence du point d'entrée** → scénario de recette normal : se connecter avec le rôle restreint, vérifier que le bouton, le lien ou le champ n'apparaît pas dans les écrans concernés.
 - **Refus de la soumission** → généralement pas jouable par un CDP. Deux exceptions à tenter d'abord : le formulaire laissé ouvert dans un onglet puis soumis après changement de compte, et le lien d'action copié depuis la session d'un rôle autorisé. Si aucune ne marche, la contrainte passe à l'étape 11 — c'est typiquement le cas où un test de policy existe déjà côté repo, et où le vérifier vaut mieux que de faire jouer une requête manuelle au CDP.
 
 ---

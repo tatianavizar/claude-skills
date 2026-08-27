@@ -50,7 +50,6 @@ Ce que l'exemple illustre :
 
 ### Scénario 1 — Un wallet par projet et IBAN virtuel du porteur (Majeure)
 - **Rôle / device** : l'admin, desktop puis **mobile** à l'étape 7
-- **Exécutable par** : CDP + accès BO
 - **Pré-conditions** : Porteur A sans projet publié et sans IBAN virtuel ; Porteur avec IBAN disponible en lecture
 - **Étapes** :
   1. Ouvrir la fiche de Porteur A et noter l'identifiant de son wallet par défaut
@@ -71,7 +70,6 @@ Ce que l'exemple illustre :
 
 ### Scénario 2 — Souscription non avertie : séquestre puis restitution en rétractation (Critique)
 - **Rôle / device** : Investisseur non averti (**mobile** à l'étape 1) puis l'admin, desktop
-- **Exécutable par** : CDP + accès BO
 - **Pré-conditions** : Projet en collecte ouverte ; Investisseur non averti avec KYC validé et solde suffisant ; enchaîner les étapes 1 à 4 **sans attendre l'expiration du délai de rétractation**
 - **Étapes** :
   1. Depuis le front mobile (375 px), souscrire et payer sur Projet en collecte
@@ -86,7 +84,6 @@ Ce que l'exemple illustre :
 
 ### Scénario 3 — Archivage d'un projet : wallet conservé, collecte fermée (Critique)
 - **Rôle / device** : l'admin, desktop
-- **Exécutable par** : CDP + accès BO
 - **Pré-conditions** : Porteur à archiver avec un projet publié — entrée dédiée, l'archivage est irréversible
 - **Étapes** :
   1. Ouvrir la fiche du projet de Porteur à archiver et noter l'identifiant du wallet de collecte
@@ -101,7 +98,6 @@ Ce que l'exemple illustre :
 
 ### Scénario 4 — KYC non validé : souscription refusée (Majeure)
 - **Rôle / device** : Investisseur sans KYC, desktop
-- **Exécutable par** : CDP seul
 - **Pré-conditions** : Investisseur sans KYC validé ; Projet en collecte ouverte
 - **Étapes** :
   1. Depuis le front, ouvrir Projet en collecte et lancer une souscription
@@ -112,7 +108,6 @@ Ce que l'exemple illustre :
 
 ### Scénario 5 — Régression : l'investisseur averti souscrit seul, parcours inchangé (Critique)
 - **Rôle / device** : Investisseur averti puis l'admin, desktop
-- **Exécutable par** : CDP + accès BO
 - **Pré-conditions** : Projet en collecte ouverte ; Investisseur averti avec KYC validé et solde suffisant. Ce scénario vérifie le parcours de souscription **tel qu'il existait avant la feature** — l'investisseur agit de lui-même, sans intervention d'un tiers
 - **Étapes** :
   1. Se connecter à l'espace investisseur et observer le tableau de bord

@@ -22,7 +22,6 @@ Les items sont classés par gravité : les trois premiers sont ceux qui produise
 
 - [ ] Aucun nom de classe, méthode, attribut, exception, job ou token CSS dans le corps du fichier — uniquement dans l'annexe technique
 - [ ] Aucun conditionnel dans les étapes ("si ce mécanisme est exposé")
-- [ ] Champ **Exécutable par** renseigné sur chaque scénario, avec `CDP seul` ou `CDP + accès BO` seulement — un scénario qui demanderait un dev n'a pas sa place dans ce fichier
 - [ ] Aucun point de vigilance utilisé pour évacuer un scénario simplement pénible à monter
 
 ## Couverture

@@ -80,7 +80,7 @@ Règles (détail et pièges dans `references/regles-redaction.md`) :
 - **Pré-conditions explicites** : rôle et ses conditions précises, feature flags, état des données. Aucun conditionnel dans les étapes ("si ce mécanisme est exposé") — l'incertitude part en question ou en point de vigilance, le livrable affirme.
 - **Le livrable ne cite jamais de code** : ni classe, ni méthode, ni attribut, ni exception, ni job, ni token CSS. Les références techniques vont en annexe pour l'équipe back, traduites en effet observable dans le corps.
 - **Noms des données de test lisibles** : "Investisseur A", "Collaborateur B", "Projet A" — jamais d'identifiant technique en kebab-case entre accents graves. La table des données de test fait le lien entre le nom et l'état à préparer.
-- **Champ `Exécutable par` sur chaque scénario** : `CDP seul` ou `CDP + accès BO`. Il qualifie **l'exécution des étapes uniquement** — la préparation des données est décrite par la colonne `Préparation` de la table. Une contrainte non jouable en recette manuelle ne devient pas un scénario ici : elle est traitée à l'étape 11.
+- **Tout scénario du fichier est jouable par un CDP** — il dispose du BO et de l'application. Une contrainte qui demanderait autre chose (basculer un flag, couper un service, tuer un traitement, soumettre depuis un rôle non autorisé) ne devient pas un scénario ici : elle est traitée à l'étape 11.
 - **Ordre = logique métier du parcours**, jamais la criticité.
 - **Criticité dans le titre** entre parenthèses : `Critique` / `Majeure` / `Mineure`.
 - **Étapes et résultats attendus en deux listes numérotées parallèles**, une entrée de résultat par étape — jamais de résultat groupé ("1–5. chaque URL renvoie 404").
