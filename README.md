@@ -7,6 +7,7 @@ Skills Claude Code maintenues par [@tatianavizar](https://github.com/tatianaviza
 | Skill | Rôle |
 |---|---|
 | [`scenarios-test-fonctionnels`](scenarios-test-fonctionnels/) | Génère des scénarios de test fonctionnels end-to-end pour une feature, en croisant le code du repo (comportement réel) avec le brief et les tickets (comportement attendu). |
+| [`psp-migration-impact-study`](psp-migration-impact-study/) | Étude d'impact d'un changement de prestataire de paiement (PSP) : cartographie des points de contact dans le code, flux par parcours, confrontation au PSP cible et au cadre réglementaire (LCB-FT, DSP2, SEPA, SCA), segmentation SQL de la base client, livrables de décision. |
 
 ## Installation
 
